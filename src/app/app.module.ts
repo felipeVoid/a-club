@@ -7,15 +7,19 @@ import { LoginComponent } from './components/login/login.component';
 import { MainComponent } from './components/main/main.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import {
   MatButtonModule,
   MatCardModule,
   MatCheckboxModule,
   MatGridListModule,
+  MatIconModule,
   MatInputModule,
   MatSelectModule,
   MatSidenavModule,
-  MatTableModule
+  MatTableModule,
+  MatToolbarModule,
+  MatTooltipModule
 } from '@angular/material';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HomeComponent } from './components/main/home/home.component';
@@ -23,6 +27,9 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireModule} from '@angular/fire';
 import {environment} from '../environments/environment';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
+import {AuthGuard} from './services/auth.guard';
+import { DataCenterComponent } from './components/main/data-center/data-center.component';
+
 
 
 @NgModule({
@@ -30,7 +37,8 @@ import {AngularFireDatabaseModule} from '@angular/fire/database';
     AppComponent,
     LoginComponent,
     MainComponent,
-    HomeComponent
+    HomeComponent,
+    DataCenterComponent
   ],
   imports: [
     BrowserModule,
@@ -46,10 +54,16 @@ import {AngularFireDatabaseModule} from '@angular/fire/database';
     MatGridListModule,
     MatCheckboxModule,
     MatSidenavModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatTooltipModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
   ],
-  providers: [AngularFireAuth],
+  providers: [
+    AngularFireAuth,
+    AuthGuard
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

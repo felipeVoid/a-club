@@ -1,15 +1,24 @@
 <mat-sidenav-container class="example-container">
-  <mat-sidenav #sidenav mode="side" [(opened)]="opened">
-    Sidenav content
-  </mat-sidenav>
-
-  <mat-sidenav-content>
-    <p><mat-checkbox [(ngModel)]="opened">sidenav.opened</mat-checkbox></p>
-    <p><button mat-button (click)="sidenav.toggle()">sidenav.toggle()</button></p>
-    <p>Events:</p>
-    <div class="example-events">
-      owo
+  <mat-sidenav class="align-center" #sidenav mode="over" [(opened)]="opened">
+    <div style="background-color: rgba(100,63,186,0.5); padding: 10px;">
+      <div><img class="logo-header" src="assets/img/logo-min.png"></div>
+      <div class="icon-header"
+           matTooltip="{{ user.email }}"
+           matTooltipPosition="below"><img (click)="sidenav.toggle()" src="{{user.photo}}" alt="{{ user.email }}"></div>
     </div>
+    <div routerLink="/"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">dashboard</mat-icon></div>
+    <div routerLink="/datacenter"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">assignment</mat-icon></div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" *ngIf="user">
+      <mat-toolbar-row>
+        <span class="icon-header"><img (click)="sidenav.toggle()" src="{{user.photo}}" alt="{{ user.email }}"></span>
+        <span><img class="logo-header" src="assets/img/logo-min.png"></span>
+        <span class="spacer-header"></span>
+        <mat-icon (click)="logout()" class="icon-header" aria-hidden="false" aria-label="icon">power_settings_new</mat-icon>
+      </mat-toolbar-row>
+    </mat-toolbar>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
+

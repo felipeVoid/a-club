@@ -11,16 +11,10 @@ import {AngularFireAuth} from '@angular/fire/auth';
 })
 export class LoginComponent implements OnInit {
   returnUrl: string;
-
-  itemRefTeams: AngularFireObject<any>;
-  members: any;
   user: any;
-  dropdownList = [];
-  globalDataBase = '';
   tiles: any;
   breakpoint = 1;
   constructor(public afAuth: AngularFireAuth,
-              private db: AngularFireDatabase,
               private router: Router,
               private route: ActivatedRoute) { }
 
@@ -40,19 +34,6 @@ export class LoginComponent implements OnInit {
       {text: this.user.photo, cols: 1, rows: 1},
       {text: this.user.email, cols: 1, rows: 1}
     ];
-    this.globalDataBase = '/users/' + this.user.uid + '/';
-    this.itemRefTeams = this.db.object(this.globalDataBase + 'members');
-    this.itemRefTeams.snapshotChanges()
-      .subscribe(action => {
-        this.members = action.payload.val();
-        console.log(this.members);
-        this.dropdownList = [];
-        if (this.members) {
-          for (let i = 0; i < this.members.length; i++) {
-            this.dropdownList.push({ item_id: i, item_text: this.members[i]['name'] });
-          }
-        }
-      });
   }
 
   login() {

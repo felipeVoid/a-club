@@ -1,0 +1,25 @@
+.icon-header {
+  cursor: pointer;
+  padding: 0 14px;
+  img {
+    height: 40px;
+    border-radius: 50%;
+    background-color: #eaeaea;
+    padding: 3px;
+    &:hover{
+      background-color: #2e1d56;
+    }
+  }
+  &:hover{
+    color: #2e1d56;
+  }
+}
+.logo-header {
+  height: 30px;
+}
+.spacer-header {
+  flex: 1 1 auto;
+}
+mat-sidenav {
+  width: 250px;
+}
