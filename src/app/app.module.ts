@@ -9,6 +9,7 @@ import { MainComponent } from './components/main/main.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import {
+  MatBadgeModule,
   MatButtonModule,
   MatCardModule,
   MatCheckboxModule,
@@ -19,8 +20,10 @@ import {
   MatSidenavModule,
   MatTableModule,
   MatToolbarModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatDialog, MatDialogModule
 } from '@angular/material';
+
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HomeComponent } from './components/main/home/home.component';
 import {AngularFireAuth} from '@angular/fire/auth';
@@ -29,8 +32,8 @@ import {environment} from '../environments/environment';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {AuthGuard} from './services/auth.guard';
 import { DataCenterComponent } from './components/main/data-center/data-center.component';
-
 import {ChartsModule} from 'ng2-charts';
+import { DetailDialogComponent } from './components/main/data-center/detail-dialog/detail-dialog.component';
 
 
 
@@ -40,7 +43,8 @@ import {ChartsModule} from 'ng2-charts';
     LoginComponent,
     MainComponent,
     HomeComponent,
-    DataCenterComponent
+    DataCenterComponent,
+    DetailDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -59,6 +63,8 @@ import {ChartsModule} from 'ng2-charts';
     MatToolbarModule,
     MatIconModule,
     MatTooltipModule,
+    MatBadgeModule,
+    MatDialogModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     ChartsModule
@@ -66,6 +72,9 @@ import {ChartsModule} from 'ng2-charts';
   providers: [
     AngularFireAuth,
     AuthGuard
+  ],
+  entryComponents: [
+    DetailDialogComponent
   ],
   bootstrap: [AppComponent]
 })

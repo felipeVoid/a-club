@@ -1,3 +1,55 @@
 table{
   width: 100%;
+  text-align: center !important;
+  td, th {
+    text-align: center !important;
+  }
+}
+.table-container {
+  overflow: auto;
+}
+
+.mat-header-cell {
+  border-left: 1px solid #e0e0e0;
+  padding: 10px;
+}
+.mat-cell{
+  border-left: 1px solid #e0e0e0;
+  padding: 10px;
+}
+
+.money {
+  cursor: pointer;
+  color: #3caf01;
+  font-size: 26px;
+  &:hover {
+    color: #54ff01;
+    font-size: 28px;
+  }
+}
+
+.edit {
+  cursor: pointer;
+  color: #d8c600;
+  font-size: 26px;
+  &:hover {
+    color: #ffed00;
+    font-size: 28px;
+  }
+}
+
+.grade-belt{
+  width: 100%;
+  height: 16px;
+  text-align: right;
+  padding-right: 6px;
+  font-weight: 900;
+}
+
+.float{
+  position:fixed;
+  width:60px;
+  height:60px;
+  bottom:40px;
+  right:40px;
 }

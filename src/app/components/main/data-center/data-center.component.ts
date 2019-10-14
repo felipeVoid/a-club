@@ -1,37 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
+import {MatDialog} from '@angular/material';
+import {DetailDialogComponent} from './detail-dialog/detail-dialog.component';
+
 @Component({
   selector: 'app-data-center',
   templateUrl: './data-center.component.html',
   styleUrls: ['./data-center.component.scss']
 })
+
 export class DataCenterComponent implements OnInit {
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
+  displayedColumns: string[] = ['name', 'current_belt', 'training_address', 'money', 'edit'];
   user: any;
   members: any;
   itemRefTeams: AngularFireObject<any>;
   membersList = [];
   globalDataBase = '';
-  constructor(private db: AngularFireDatabase) { }
+  constructor(private db: AngularFireDatabase, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem('data'));
@@ -46,11 +31,87 @@ export class DataCenterComponent implements OnInit {
         this.members = action.payload.val();
         this.membersList = [];
         if (this.members.length > 0) {
+          // tslint:disable-next-line:prefer-for-of
           for (let i = 0; i < this.members.length; i++) {
-            this.membersList.push({ item_id: i, item_text: this.members[i]['name'] });
+            let grade = 'none';
+            if (this.members[i].current_belt === 'I dan') {
+              grade = this.members[i].current_belt;
+            }
+            this.membersList.push({
+              id: i,
+              name: this.members[i].name,
+              training_address: this.members[i].training_address,
+              current_belt: this.members[i].current_belt
+            });
           }
-          console.log(this.membersList);
+          console.log(this.members);
         }
       });
+  }
+
+  checkGradeColorPrimary(grade) {
+    switch (grade) {
+      case 'VI dan': return '#000000';
+      case 'V dan': return '#000000';
+      case 'IV dan': return '#000000';
+      case 'III dan': return '#000000';
+      case 'II dan': return '#000000';
+      case 'I dan': return '#000000';
+      case 'I gup': return '#cf0000';
+      case 'II gup': return '#cf0000';
+      case 'III gup': return '#0a08cf';
+      case 'IV gup': return '#0a08cf';
+      case 'V gup': return '#48be00';
+      case 'VI gup': return '#48be00';
+      case 'VII gup': return '#ffe300';
+      case 'VIII gup': return '#ffe300';
+      case 'IX gup': return '#eaeaea';
+      default: return '#eaeaea';
+    }
+  }
+
+  checkGradeColorSecondary(grade) {
+    switch (grade) {
+      case 'VI dan': return '#cfbe00';
+      case 'V dan': return '#cfbe00';
+      case 'IV dan': return '#cfbe00';
+      case 'III dan': return '#cfbe00';
+      case 'II dan': return '#cfbe00';
+      case 'I dan': return '#cfbe00';
+      case 'I gup': return '#000000';
+      case 'II gup': return '#cf0000';
+      case 'III gup': return '#cf0000';
+      case 'IV gup': return '#0a08cf';
+      case 'V gup': return '#0a08cf';
+      case 'VI gup': return '#48be00';
+      case 'VII gup': return '#48be00';
+      case 'VIII gup': return '#ffe300';
+      case 'IX gup': return '#ffe300';
+      default: return '#eaeaea';
+    }
+  }
+
+  checkGradeText(grade) {
+    switch (grade) {
+      case 'VI dan': return 'VI';
+      case 'V dan': return 'V';
+      case 'IV dan': return 'IV';
+      case 'III dan': return 'III';
+      case 'II dan': return 'II';
+      case 'I dan': return 'I';
+      default: return 'II';
+    }
+  }
+
+  openDialog(data): void {
+    const dialogRef = this.dialog.open(DetailDialogComponent, {
+      width: '350px',
+      data: {item: data}
+    });
+    /*
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+     */
   }
 }
