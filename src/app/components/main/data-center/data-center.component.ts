@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
-import {MatDialog} from '@angular/material';
+import {MatDialog, MatTableDataSource} from '@angular/material';
 import {DetailDialogComponent} from './detail-dialog/detail-dialog.component';
 
 @Component({
@@ -10,13 +10,16 @@ import {DetailDialogComponent} from './detail-dialog/detail-dialog.component';
 })
 
 export class DataCenterComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'current_belt', 'training_address', 'money', 'edit'];
+  displayedColumns: string[] = ['name', 'training_address', 'current_belt', 'money', 'edit'];
   user: any;
   members: any;
   itemRefTeams: AngularFireObject<any>;
   membersList = [];
   globalDataBase = '';
-  constructor(private db: AngularFireDatabase, public dialog: MatDialog) { }
+  dataSource = new MatTableDataSource();
+
+  constructor(private db: AngularFireDatabase,
+              public dialog: MatDialog) { }
 
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem('data'));
@@ -44,9 +47,13 @@ export class DataCenterComponent implements OnInit {
               current_belt: this.members[i].current_belt
             });
           }
-          console.log(this.members);
+          this.dataSource = new MatTableDataSource(this.membersList);
         }
       });
+  }
+
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   checkGradeColorPrimary(grade) {
