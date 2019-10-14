@@ -6,8 +6,8 @@
            matTooltip="{{ user.email }}"
            matTooltipPosition="below"><img (click)="sidenav.toggle()" src="{{user.photo}}" alt="{{ user.email }}"></div>
     </div>
-    <div routerLink="/"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">dashboard</mat-icon></div>
-    <div routerLink="/datacenter"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">assignment</mat-icon></div>
+    <div class="menu-item" routerLink="/" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">dashboard</mat-icon></div>
+    <div class="menu-item" routerLink="/datacenter" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">assignment</mat-icon></div>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="primary" *ngIf="user">

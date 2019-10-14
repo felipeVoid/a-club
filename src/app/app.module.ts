@@ -30,6 +30,8 @@ import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {AuthGuard} from './services/auth.guard';
 import { DataCenterComponent } from './components/main/data-center/data-center.component';
 
+import {ChartsModule} from 'ng2-charts';
+
 
 
 @NgModule({
@@ -59,6 +61,7 @@ import { DataCenterComponent } from './components/main/data-center/data-center.c
     MatTooltipModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
+    ChartsModule
   ],
   providers: [
     AngularFireAuth,

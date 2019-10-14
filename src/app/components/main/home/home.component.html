@@ -1,2 +1,13 @@
-<h1>TODO: hacer un listado de miembros con un dashboard con un resumen de datos en relación a las cuotas, ingresos, cantidad de alumnos, y más.</h1>
-
+<div class="container">
+  <h3>TODO: hacer un listado de miembros con un dashboard con un resumen de datos en relación a las cuotas, ingresos, cantidad de alumnos, y más.</h3>
+  <div style="display: block;">
+    <canvas baseChart
+            [data]="pieChartData"
+            [labels]="pieChartLabels"
+            [chartType]="pieChartType"
+            [options]="pieChartOptions"
+            [plugins]="pieChartPlugins"
+            [legend]="pieChartLegend">
+    </canvas>
+  </div>
+</div>

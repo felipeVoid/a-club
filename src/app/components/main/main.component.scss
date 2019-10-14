@@ -23,3 +23,16 @@
 mat-sidenav {
   width: 250px;
 }
+.menu-item{
+  cursor: pointer;
+  padding: 20px;
+  .icon-header {
+    color: #2e1d56;
+  }
+  &:hover {
+    background-color: #2e1d56;
+    .icon-header {
+      color: #ffffff;
+    }
+  }
+}
