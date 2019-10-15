@@ -1,15 +1,15 @@
 .menu-header {
-  background-color: rgba(100,63,186,0.5);
-  padding: 10px;
+  background-color: #673ab7;
+  padding: 15px;
 }
 .icon-header {
   cursor: pointer;
   padding: 0 14px;
   img {
-    height: 40px;
+    height: 36px;
     border-radius: 50%;
     background-color: #eaeaea;
-    padding: 3px;
+    padding: 2px;
     &:hover{
       background-color: #2e1d56;
     }

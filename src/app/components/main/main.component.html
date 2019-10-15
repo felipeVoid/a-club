@@ -1,11 +1,7 @@
-<mat-sidenav-container class="example-container">
+<mat-sidenav-container>
   <mat-sidenav class="align-center" #sidenav mode="over" [(opened)]="opened">
     <div class="menu-header">
-      <mat-icon (click)="logout()" class="icon-header" aria-hidden="false" aria-label="icon">power_settings_new</mat-icon>
-      <div><img class="logo-header" src="assets/img/logo-min.png"></div>
-      <div class="icon-header"
-           matTooltip="{{ user.email }}"
-           matTooltipPosition="below"><img (click)="sidenav.toggle()" src="{{user.photo}}" alt="{{ user.email }}"></div>
+      <div><img routerLink="/" class="logo-header cursor-pointer" alt="logo" src="assets/img/logo-min.png"></div>
     </div>
     <div class="menu-item" routerLink="/" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">dashboard</mat-icon></div>
     <div class="menu-item" routerLink="/datacenter" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">assignment</mat-icon></div>
@@ -13,10 +9,42 @@
   <mat-sidenav-content>
     <mat-toolbar color="primary" *ngIf="user">
       <mat-toolbar-row>
-        <span class="icon-header"><img (click)="sidenav.toggle()" src="{{user.photo}}" alt="{{ user.email }}"></span>
-        <span><img class="logo-header" src="assets/img/logo-min.png"></span>
+        <mat-icon (click)="sidenav.toggle()" class="icon-header">menu</mat-icon>
+        <span><img routerLink="/" class="logo-header cursor-pointer" alt="logo" src="assets/img/logo-min.png"></span>
         <span class="spacer-header"></span>
-        <mat-icon class="icon-header" matBadge="15" matBadgeColor="warn">home</mat-icon>
+
+        <mat-icon class="icon-header" [matMenuTriggerFor]="menuNot" matBadge="1" matBadgeColor="warn">notifications</mat-icon>
+        <mat-menu #menuNot="matMenu">
+          <div mat-menu-item>
+            <mat-icon>emoji_people</mat-icon>
+            <span><b>Bienvenido </b> {{ user.name }} !</span>
+          </div>
+        </mat-menu>
+
+        <span class="icon-header"><img [matMenuTriggerFor]="menuGmail" src="{{user.picture}}" alt="{{ user.email }}"></span>
+        <mat-menu #menuGmail="matMenu">
+          <div mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>{{ user.name }}</span>
+          </div>
+          <a mat-menu-item href="https://mail.google.com/mail/u/0/">
+            <mat-icon>email</mat-icon>
+            <span>{{ user.email }}</span>
+          </a>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>cancel</mat-icon>
+            <span>Cerrar sesión</span>
+          </button>
+        </mat-menu>
+
+        <mat-icon class="icon-header" [matMenuTriggerFor]="menuMore">more_vert</mat-icon>
+        <mat-menu #menuMore="matMenu">
+          <button (click)="openDialogNotes()" mat-menu-item>
+            <mat-icon>event_note</mat-icon>
+            <span>Notas</span>
+          </button>
+        </mat-menu>
+
       </mat-toolbar-row>
     </mat-toolbar>
     <router-outlet></router-outlet>

@@ -37,3 +37,10 @@ mat-sidenav-container{
 .mat-form-field-infix {
   margin: 20px !important;
 }
+.mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content {
+  right: 0;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}

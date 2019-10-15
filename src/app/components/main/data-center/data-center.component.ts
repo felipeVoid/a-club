@@ -17,17 +17,18 @@ export class DataCenterComponent implements OnInit {
   dataSource = new MatTableDataSource();
   itemRef: AngularFireObject<any>;
   globalDataBase = '';
+  showProgress = true;
 
   constructor(private db: AngularFireDatabase,
               public dialog: MatDialog) { }
 
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem('data'));
+    this.globalDataBase = '/users/' + this.user.uid + '/';
     this.getMembers();
   }
 
   getMembers() {
-    this.globalDataBase = '/users/' + this.user.uid + '/';
     this.itemRef = this.db.object(this.globalDataBase + 'members');
     this.itemRef.snapshotChanges()
       .subscribe(action => {
@@ -47,6 +48,7 @@ export class DataCenterComponent implements OnInit {
         if (this.membersList.length > 0) {
           this.dataSource = new MatTableDataSource(this.membersList);
         }
+        this.showProgress = false;
       });
   }
 
@@ -108,9 +110,9 @@ export class DataCenterComponent implements OnInit {
     }
   }
 
-  openDialog(data, id): void {
+  openDialogDetails(data, id): void {
     const dialogRef = this.dialog.open(DetailDialogComponent, {
-      width: '350px',
+      width: '750px',
       data: {item: data, idItem: id}
     });
     dialogRef.afterClosed().subscribe(result => {

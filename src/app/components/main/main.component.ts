@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {auth} from 'firebase';
 import {AngularFireAuth} from '@angular/fire/auth';
+import {DetailDialogComponent} from './data-center/detail-dialog/detail-dialog.component';
+import {MatDialog} from '@angular/material';
+import {NotesDialogComponent} from './notes-dialog/notes-dialog.component';
 
 @Component({
   selector: 'app-main',
@@ -10,23 +12,10 @@ import {AngularFireAuth} from '@angular/fire/auth';
 export class MainComponent implements OnInit {
   opened: boolean;
   user: any;
-  constructor(public afAuth: AngularFireAuth) { }
+  constructor(public afAuth: AngularFireAuth, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.init();
-  }
-
-  login() {
-    this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(data => {
-      localStorage.setItem('data', JSON.stringify({
-        uid: data.user.uid,
-        email: data.user.email,
-        photo: data.additionalUserInfo.profile['picture']
-      }));
-      this.init();
-    }).catch( error => {
-      console.log(error);
-    });
   }
 
   logout() {
@@ -42,4 +31,12 @@ export class MainComponent implements OnInit {
     this.user = JSON.parse(localStorage.getItem('data'));
   }
 
+  openDialogNotes(): void {
+    const dialogRef = this.dialog.open(NotesDialogComponent, {
+      width: '750px'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      // console.log('The dialog was closed');
+    });
+  }
 }

@@ -31,8 +31,8 @@ export class LoginComponent implements OnInit {
     this.onResize(window.innerWidth);
     this.user = JSON.parse(localStorage.getItem('data'));
     this.tiles = [
-      {text: this.user.photo, cols: 1, rows: 1},
-      {text: this.user.email, cols: 1, rows: 1}
+      {item: this.user.picture, cols: 1, rows: 1},
+      {item: this.user.email, cols: 1, rows: 1}
     ];
   }
 
@@ -40,10 +40,11 @@ export class LoginComponent implements OnInit {
     this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(data => {
       localStorage.setItem('data', JSON.stringify({
         uid: data.user.uid,
-        email: data.user.email,
-        photo: data.additionalUserInfo.profile['picture']
+        email: data.additionalUserInfo.profile['email'],
+        picture: data.additionalUserInfo.profile['picture'],
+        name: data.additionalUserInfo.profile['name']
       }));
-      this.init();
+      window.location.reload();
     }).catch( error => {
       console.log(error);
     });

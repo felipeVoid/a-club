@@ -1,21 +1,23 @@
 <div class="center-item">
   <mat-card class="align-center card-login">
-    <img src="assets/img/logo-min.png">
-    <div *ngIf="user" style="border-radius: 6px; border: 1px solid #eaeaea; margin: 20px;">
+    <img alt="logo" src="assets/img/logo-min.png">
+    <div class="login-form" *ngIf="user">
+      <br>
+      <div>Bienvenido <b>{{user.name}}</b>.</div>
       <mat-grid-list [cols]="breakpoint" rowHeight="100px" (window:resize)="onResize($event.target.innerWidth)">
         <mat-grid-tile
-          [colspan]="tiles[0].cols"
-          [rowspan]="tiles[0].rows">
-          <img style="border-radius: 50%; background-color: #b9b9b9; padding: 6px;" src="{{tiles[0].text}}">
+          [colspan]="1"
+          [rowspan]="1">
+          <img class="img-login" alt="picture" src="{{user.picture}}">
         </mat-grid-tile>
         <mat-grid-tile
-          [colspan]="tiles[1].cols"
-          [rowspan]="tiles[1].rows">
-          <h3>{{tiles[1].text}}</h3>
+          [colspan]="1"
+          [rowspan]="1">
+          <h3>{{user.email}}</h3>
         </mat-grid-tile>
       </mat-grid-list>
     </div>
-    <button *ngIf="user" (click)="navigate()" style="margin-bottom: 20px;" mat-raised-button color="primary">Administrar club</button>
+    <button class="btn-login" *ngIf="user" (click)="navigate()" mat-raised-button color="primary">Administrar club</button>
   </mat-card>
 </div>
 

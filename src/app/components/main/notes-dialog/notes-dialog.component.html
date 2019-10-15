@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Notas</h1>
+<div mat-dialog-content>
+  <mat-progress-bar *ngIf="showProgress" mode="indeterminate"></mat-progress-bar>
+  <mat-form-field appearance="outline" *ngFor="let item of notesList" class="found-item">
+    <input matInput [(ngModel)]="item.text">
+    <mat-icon matSuffix (click)="deleteNote(item)" aria-hidden="false" aria-label="icon" color="primary">delete</mat-icon>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="add-item">
+    <mat-label>Agregar nota</mat-label>
+    <input #note matInput placeholder="Agregar nota">
+    <mat-icon matSuffix (click)="addNote(note)" aria-hidden="false" aria-label="icon" color="primary">add</mat-icon>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="closeDialog()">Cerrar</button>
+  <button (click)="saveNotes()" mat-raised-button color="primary">Guardar</button>
+</div>

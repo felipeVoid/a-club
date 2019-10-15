@@ -1,0 +1,28 @@
+.add-item{
+  input {
+    font-size: 16px !important;
+  }
+  mat-icon {
+    cursor: pointer;
+    color: #3caf01;
+    &:hover {
+      color: #46cc01;
+    }
+  }
+}
+.found-item {
+  input {
+    font-size: 16px !important;
+  }
+  cursor: pointer;
+  mat-icon {
+    color: #af1300;
+    &:hover {
+      color: #d21700;
+    }
+  }
+}
+
+.mat-form-field-wrapper{
+  padding: 0;
+}

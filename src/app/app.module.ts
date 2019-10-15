@@ -21,7 +21,9 @@ import {
   MatTableModule,
   MatToolbarModule,
   MatTooltipModule,
-  MatDialog, MatDialogModule
+  MatDialogModule,
+  MatMenuModule,
+  MatProgressBarModule
 } from '@angular/material';
 
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -34,6 +36,7 @@ import {AuthGuard} from './services/auth.guard';
 import { DataCenterComponent } from './components/main/data-center/data-center.component';
 import {ChartsModule} from 'ng2-charts';
 import { DetailDialogComponent } from './components/main/data-center/detail-dialog/detail-dialog.component';
+import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialog.component';
 
 
 
@@ -44,7 +47,8 @@ import { DetailDialogComponent } from './components/main/data-center/detail-dial
     MainComponent,
     HomeComponent,
     DataCenterComponent,
-    DetailDialogComponent
+    DetailDialogComponent,
+    NotesDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -65,6 +69,8 @@ import { DetailDialogComponent } from './components/main/data-center/detail-dial
     MatTooltipModule,
     MatBadgeModule,
     MatDialogModule,
+    MatMenuModule,
+    MatProgressBarModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     ChartsModule
@@ -74,7 +80,8 @@ import { DetailDialogComponent } from './components/main/data-center/detail-dial
     AuthGuard
   ],
   entryComponents: [
-    DetailDialogComponent
+    DetailDialogComponent,
+    NotesDialogComponent
   ],
   bootstrap: [AppComponent]
 })
