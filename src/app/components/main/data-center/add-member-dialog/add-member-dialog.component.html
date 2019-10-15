@@ -1,0 +1,59 @@
+<h1 mat-dialog-title>Agregar miembro</h1>
+<div mat-dialog-content>
+  <mat-form-field appearance="outline">
+    <mat-label>Rut</mat-label>
+    <input #rut matInput [(ngModel)]="member.id" required>
+  </mat-form-field>
+
+  <div>
+    <label for="file">Foto ficha</label>
+    <input id="file" type="file" (change)="setFile($event)" required>
+  </div>
+  <div style="width: 100%;">
+    <h5>Image preview</h5>
+    <img style="width: 50%;" id="imgFile" src="assets/img/default-image.jpg">
+  </div>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Nombre</mat-label>
+    <input matInput [(ngModel)]="member.item.name">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Grado</mat-label>
+    <mat-select [(value)]="member.item.current_belt">
+      <mat-option *ngFor="let belt of belts" [value]="belt">
+        {{belt}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Email</mat-label>
+    <input type="email" matInput [(ngModel)]="member.item.email">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Teléfono</mat-label>
+    <input matInput [(ngModel)]="member.item.phone">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Rol</mat-label>
+    <mat-select [(value)]="member.item.role">
+      <mat-option *ngFor="let role of roles" [value]="role">
+        {{role}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Dojang</mat-label>
+    <input matInput [(ngModel)]="member.item.training_address">
+  </mat-form-field>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="closeDialog()">Cerrar</button>
+  <button *ngIf="rut.value.length > 8" (click)="addMember()" mat-raised-button color="primary">Guardar</button>
+</div>

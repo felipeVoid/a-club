@@ -23,7 +23,6 @@ export class NotesDialogComponent implements OnInit {
   }
 
   getNotes() {
-    this.globalDataBase = '/users/' + this.user.uid + '/';
     this.itemRef = this.db.object(this.globalDataBase + 'notes');
     this.itemRef.snapshotChanges()
       .subscribe(action => {
@@ -34,6 +33,12 @@ export class NotesDialogComponent implements OnInit {
       });
   }
 
+  saveNotes() {
+    this.itemRef = this.db.object(this.globalDataBase + 'notes');
+    this.itemRef.set(this.notesList);
+    this.dialogRef.close();
+  }
+
   addNote(value) {
     this.notesList.push({ text: value.value });
     value.value = '';
@@ -41,12 +46,6 @@ export class NotesDialogComponent implements OnInit {
 
   deleteNote(item) {
     this.notesList = this.notesList.filter(x => x !== item);
-  }
-
-  saveNotes() {
-    this.itemRef = this.db.object(this.globalDataBase + 'notes');
-    this.itemRef.set(this.notesList);
-    this.dialogRef.close();
   }
 
   closeDialog() {

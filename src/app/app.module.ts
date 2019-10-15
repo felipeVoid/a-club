@@ -37,6 +37,8 @@ import { DataCenterComponent } from './components/main/data-center/data-center.c
 import {ChartsModule} from 'ng2-charts';
 import { DetailDialogComponent } from './components/main/data-center/detail-dialog/detail-dialog.component';
 import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialog.component';
+import { AddMemberDialogComponent } from './components/main/data-center/add-member-dialog/add-member-dialog.component';
+import {AngularFireStorage} from '@angular/fire/storage';
 
 
 
@@ -48,7 +50,8 @@ import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialo
     HomeComponent,
     DataCenterComponent,
     DetailDialogComponent,
-    NotesDialogComponent
+    NotesDialogComponent,
+    AddMemberDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -77,11 +80,13 @@ import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialo
   ],
   providers: [
     AngularFireAuth,
+    AngularFireStorage,
     AuthGuard
   ],
   entryComponents: [
     DetailDialogComponent,
-    NotesDialogComponent
+    NotesDialogComponent,
+    AddMemberDialogComponent
   ],
   bootstrap: [AppComponent]
 })

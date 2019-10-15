@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
 import {MatDialog, MatTableDataSource} from '@angular/material';
 import {DetailDialogComponent} from './detail-dialog/detail-dialog.component';
+import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.component';
 
 @Component({
   selector: 'app-data-center',
@@ -58,55 +59,64 @@ export class DataCenterComponent implements OnInit {
 
   checkGradeColorPrimary(grade) {
     switch (grade) {
-      case 'VI dan': return '#000000';
-      case 'V dan': return '#000000';
-      case 'IV dan': return '#000000';
-      case 'III dan': return '#000000';
-      case 'II dan': return '#000000';
-      case 'I dan': return '#000000';
-      case 'I gup': return '#cf0000';
-      case 'II gup': return '#cf0000';
-      case 'III gup': return '#0a08cf';
-      case 'IV gup': return '#0a08cf';
-      case 'V gup': return '#48be00';
-      case 'VI gup': return '#48be00';
-      case 'VII gup': return '#ffe300';
-      case 'VIII gup': return '#ffe300';
-      case 'IX gup': return '#eaeaea';
+      case '9dan': return '#000000';
+      case '8dan': return '#000000';
+      case '7dan': return '#000000';
+      case '6dan': return '#000000';
+      case '5dan': return '#000000';
+      case '4dan': return '#000000';
+      case '3dan': return '#000000';
+      case '2dan': return '#000000';
+      case '1dan': return '#000000';
+      case '1gup': return '#cf0000';
+      case '2gup': return '#cf0000';
+      case '3gup': return '#0a08cf';
+      case '4gup': return '#0a08cf';
+      case '5gup': return '#48be00';
+      case '6gup': return '#48be00';
+      case '7gup': return '#ffe300';
+      case '8gup': return '#ffe300';
+      case '9gup': return '#eaeaea';
       default: return '#eaeaea';
     }
   }
 
   checkGradeColorSecondary(grade) {
     switch (grade) {
-      case 'VI dan': return '#cfbe00';
-      case 'V dan': return '#cfbe00';
-      case 'IV dan': return '#cfbe00';
-      case 'III dan': return '#cfbe00';
-      case 'II dan': return '#cfbe00';
-      case 'I dan': return '#cfbe00';
-      case 'I gup': return '#000000';
-      case 'II gup': return '#cf0000';
-      case 'III gup': return '#cf0000';
-      case 'IV gup': return '#0a08cf';
-      case 'V gup': return '#0a08cf';
-      case 'VI gup': return '#48be00';
-      case 'VII gup': return '#48be00';
-      case 'VIII gup': return '#ffe300';
-      case 'IX gup': return '#ffe300';
+      case '9dan': return '#cfbe00';
+      case '8dan': return '#cfbe00';
+      case '7dan': return '#cfbe00';
+      case '6dan': return '#cfbe00';
+      case '5dan': return '#cfbe00';
+      case '4dan': return '#cfbe00';
+      case '3dan': return '#cfbe00';
+      case '2dan': return '#cfbe00';
+      case '1dan': return '#cfbe00';
+      case '1gup': return '#000000';
+      case '2gup': return '#cf0000';
+      case '3gup': return '#cf0000';
+      case '4gup': return '#0a08cf';
+      case '5gup': return '#0a08cf';
+      case '6gup': return '#48be00';
+      case '7gup': return '#48be00';
+      case '8gup': return '#ffe300';
+      case '9gup': return '#ffe300';
       default: return '#eaeaea';
     }
   }
 
   checkGradeText(grade) {
     switch (grade) {
-      case 'VI dan': return 'VI';
-      case 'V dan': return 'V';
-      case 'IV dan': return 'IV';
-      case 'III dan': return 'III';
-      case 'II dan': return 'II';
-      case 'I dan': return 'I';
-      default: return 'II';
+      case '9dan': return 'IX';
+      case '8dan': return 'VIII';
+      case '7dan': return 'VII';
+      case '6dan': return 'VI';
+      case '5dan': return 'V';
+      case '4dan': return 'IV';
+      case '3dan': return 'III';
+      case '2dan': return 'II';
+      case '1dan': return 'I';
+      default: return 'I';
     }
   }
 
@@ -114,6 +124,15 @@ export class DataCenterComponent implements OnInit {
     const dialogRef = this.dialog.open(DetailDialogComponent, {
       width: '750px',
       data: {item: data, idItem: id}
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      // console.log('The dialog was closed');
+    });
+  }
+
+  openDialogAddMember(): void {
+    const dialogRef = this.dialog.open(AddMemberDialogComponent, {
+      width: '750px'
     });
     dialogRef.afterClosed().subscribe(result => {
       // console.log('The dialog was closed');
