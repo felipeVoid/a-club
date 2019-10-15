@@ -8,19 +8,19 @@
       <!-- Name Column -->
       <ng-container matColumnDef="name" sticky>
         <th mat-header-cell *matHeaderCellDef> Nombre </th>
-        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.item.name}} </td>
       </ng-container>
 
       <ng-container matColumnDef="training_address">
         <th mat-header-cell *matHeaderCellDef> Dojang </th>
-        <td mat-cell *matCellDef="let element"> {{element.training_address}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.item.training_address}} </td>
       </ng-container>
 
       <ng-container matColumnDef="current_belt">
         <th mat-header-cell *matHeaderCellDef> Grado </th>
         <td mat-cell *matCellDef="let element">
-          <div class="grade-belt" [style.backgroundColor]="checkGradeColorPrimary(element.current_belt)">
-            <span [style.color]="checkGradeColorSecondary(element.current_belt)">{{checkGradeText(element.current_belt)}}</span>
+          <div class="grade-belt" [style.backgroundColor]="checkGradeColorPrimary(element.item.current_belt)">
+            <span [style.color]="checkGradeColorSecondary(element.item.current_belt)">{{checkGradeText(element.item.current_belt)}}</span>
           </div>
         </td>
       </ng-container>
@@ -37,7 +37,7 @@
       <ng-container matColumnDef="edit" stickyEnd>
         <th mat-header-cell *matHeaderCellDef> Detalles </th>
         <td mat-cell *matCellDef="let element">
-          <mat-icon (click)="openDialog(element)" class="edit" aria-hidden="false" aria-label="icon">person_pin</mat-icon>
+          <mat-icon (click)="openDialog(element.item, element.id)" class="edit" aria-hidden="false" aria-label="icon">person_pin</mat-icon>
         </td>
       </ng-container>
 

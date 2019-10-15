@@ -1,10 +1,15 @@
-<h1 mat-dialog-title>{{data.item.name}}</h1>
+<h1 mat-dialog-title>Detalles</h1>
 <div mat-dialog-content>
+  <mat-form-field>
+    <input matInput [(ngModel)]="data.item.name">
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput [(ngModel)]="data.item.current_belt">
+  </mat-form-field>
   <mat-form-field>
     <input matInput [(ngModel)]="data.item.training_address">
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">No Thanks</button>
-  <button mat-button [mat-dialog-close]="data.item.name" cdkFocusInitial>Ok</button>
+  <button (click)="putMemberDetail()" mat-raised-button color="primary">Guardar</button>
 </div>

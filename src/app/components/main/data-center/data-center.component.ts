@@ -13,10 +13,10 @@ export class DataCenterComponent implements OnInit {
   displayedColumns: string[] = ['name', 'training_address', 'current_belt', 'money', 'edit'];
   user: any;
   members: any;
-  itemRefTeams: AngularFireObject<any>;
   membersList = [];
-  globalDataBase = '';
   dataSource = new MatTableDataSource();
+  itemRef: AngularFireObject<any>;
+  globalDataBase = '';
 
   constructor(private db: AngularFireDatabase,
               public dialog: MatDialog) { }
@@ -28,25 +28,23 @@ export class DataCenterComponent implements OnInit {
 
   getMembers() {
     this.globalDataBase = '/users/' + this.user.uid + '/';
-    this.itemRefTeams = this.db.object(this.globalDataBase + 'members');
-    this.itemRefTeams.snapshotChanges()
+    this.itemRef = this.db.object(this.globalDataBase + 'members');
+    this.itemRef.snapshotChanges()
       .subscribe(action => {
         this.members = action.payload.val();
         this.membersList = [];
-        if (this.members.length > 0) {
-          // tslint:disable-next-line:prefer-for-of
-          for (let i = 0; i < this.members.length; i++) {
-            let grade = 'none';
-            if (this.members[i].current_belt === 'I dan') {
-              grade = this.members[i].current_belt;
-            }
+        for (const obj in this.members) {
+          if (this.members[obj]) {
             this.membersList.push({
-              id: i,
-              name: this.members[i].name,
-              training_address: this.members[i].training_address,
-              current_belt: this.members[i].current_belt
+              id: obj,
+              dojo: this.members[obj].training_address,
+              name: this.members[obj].name,
+              grade: this.members[obj].current_belt,
+              item: this.members[obj]
             });
           }
+        }
+        if (this.membersList.length > 0) {
           this.dataSource = new MatTableDataSource(this.membersList);
         }
       });
@@ -110,15 +108,13 @@ export class DataCenterComponent implements OnInit {
     }
   }
 
-  openDialog(data): void {
+  openDialog(data, id): void {
     const dialogRef = this.dialog.open(DetailDialogComponent, {
       width: '350px',
-      data: {item: data}
+      data: {item: data, idItem: id}
     });
-    /*
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+      // console.log('The dialog was closed');
     });
-     */
   }
 }
