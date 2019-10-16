@@ -1,17 +1,125 @@
 <h1 mat-dialog-title>Detalles</h1>
+<div class="align-left">
+  <span>Editar: </span>
+  <button [class]="disableInput ? 'mat-raised-button mat-button-base mat-primary' : 'mat-raised-button edit-on'" (click)="disableInput = !disableInput" mat-raised-button color="primary">{{disableInput ? 'Off' : 'On'}}</button>
+</div>
+<br>
 <div mat-dialog-content>
-  <div>
-    <img alt="picture" style="width: 15%;" src="{{data.item.picture}}">
-  </div>
+  <mat-grid-list [cols]="breakpoint" rowHeight="300px" (window:resize)="onResize($event.target.innerWidth)">
+    <mat-grid-tile
+      [colspan]="1"
+      [rowspan]="1">
+      <div>
+        <img alt="picture" class="profile-picture" src="{{data.item.picture}}">
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile
+      [colspan]="1"
+      [rowspan]="1">
+      <div>
+        <mat-form-field>
+          <mat-label>Rut</mat-label>
+          <input matInput [value]="data.idItem" disabled>
+        </mat-form-field>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+
   <mat-form-field>
-    <input matInput [(ngModel)]="data.item.name">
+    <mat-label>Nombre</mat-label>
+    <input matInput [(ngModel)]="data.item.name" [disabled]="disableInput">
   </mat-form-field>
+
+  <mat-accordion *ngIf="false">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Gup
+        </mat-panel-title>
+        <mat-panel-description>
+          Fecha examen
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="expansion-panel-container">
+        <mat-accordion *ngFor="let item of listGup">
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{item.grade}}° GUP
+              </mat-panel-title>
+              <mat-panel-description>
+                {{item.date}}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="expansion-panel-container">
+              <h1>uwu</h1>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Dan
+        </mat-panel-title>
+        <mat-panel-description>
+          Fecha examen
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="expansion-panel-container">
+        <mat-accordion *ngFor="let item of listDan">
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{item.grade}}° Dan
+              </mat-panel-title>
+              <mat-panel-description>
+                {{item.date}}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="expansion-panel-container">
+              <h1>owo</h1>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
   <mat-form-field>
-    <input matInput [(ngModel)]="data.item.current_belt">
+    <mat-label>Grado</mat-label>
+    <mat-select [(value)]="data.item.current_belt" [disabled]="disableInput">
+      <mat-option *ngFor="let belt of belts" [value]="belt">
+        {{belt}}
+      </mat-option>
+    </mat-select>
   </mat-form-field>
+
   <mat-form-field>
-    <input matInput [(ngModel)]="data.item.training_address">
+    <mat-label>Email</mat-label>
+    <input matInput [(ngModel)]="data.item.email" [disabled]="disableInput">
   </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Teléfono</mat-label>
+    <input matInput [(ngModel)]="data.item.phone" [disabled]="disableInput">
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Rol</mat-label>
+    <mat-select [(value)]="data.item.role" [disabled]="disableInput">
+      <mat-option *ngFor="let role of roles" [value]="role">
+        {{role}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Dojang</mat-label>
+    <input matInput [(ngModel)]="data.item.training_address" [disabled]="disableInput">
+  </mat-form-field>
+
 </div>
 <div mat-dialog-actions>
   <button (click)="putMemberDetail()" mat-raised-button color="primary">Guardar</button>

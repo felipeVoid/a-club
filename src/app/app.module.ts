@@ -23,7 +23,7 @@ import {
   MatTooltipModule,
   MatDialogModule,
   MatMenuModule,
-  MatProgressBarModule
+  MatProgressBarModule, MatExpansionModule
 } from '@angular/material';
 
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -74,6 +74,7 @@ import {AngularFireStorage} from '@angular/fire/storage';
     MatDialogModule,
     MatMenuModule,
     MatProgressBarModule,
+    MatExpansionModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     ChartsModule

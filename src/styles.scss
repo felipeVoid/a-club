@@ -11,10 +11,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .align-center{
   text-align: center !important;
 }
+.align-left {
+  text-align: left !important;
+}
 .center-item{
   padding-top: 60px;
   margin: auto;
   width: 80%;
+}
+.edit-on {
+  background-color: #ffffff;
+  color: #2e1d56;
+  border: 2px solid #2e1d56 !important;
+  line-height: 32px !important;
 }
 .title-form{
   font-size: 24px;
