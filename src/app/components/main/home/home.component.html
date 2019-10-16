@@ -1,5 +1,13 @@
 <div class="container">
-  <div style="display: block;">
+  <div style="display: flex;">
+    <canvas baseChart
+            [data]="pieChartData"
+            [labels]="pieChartLabels"
+            [chartType]="pieChartType"
+            [options]="pieChartOptions"
+            [plugins]="pieChartPlugins"
+            [legend]="pieChartLegend">
+    </canvas>
     <canvas baseChart
             [data]="pieChartData"
             [labels]="pieChartLabels"

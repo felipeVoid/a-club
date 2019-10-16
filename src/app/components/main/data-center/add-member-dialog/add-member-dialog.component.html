@@ -1,18 +1,16 @@
 <h1 mat-dialog-title>Agregar miembro</h1>
 <div mat-dialog-content>
+
+  <div class="file-input">
+    <p>Foto ficha</p>
+    <img alt="default" (click)="fileInput.click()" id="imgFile" src="assets/img/default-image.jpg">
+    <input #fileInput type="file" (change)="setFile($event)" required>
+  </div>
+
   <mat-form-field appearance="outline">
     <mat-label>Rut</mat-label>
     <input #rut matInput [(ngModel)]="member.id" required>
   </mat-form-field>
-
-  <div>
-    <label for="file">Foto ficha</label>
-    <input id="file" type="file" (change)="setFile($event)" required>
-  </div>
-  <div style="width: 100%;">
-    <h5>Image preview</h5>
-    <img style="width: 50%;" id="imgFile" src="assets/img/default-image.jpg">
-  </div>
 
   <mat-form-field appearance="outline">
     <mat-label>Nombre</mat-label>

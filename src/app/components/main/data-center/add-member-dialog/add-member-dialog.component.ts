@@ -18,7 +18,7 @@ export class AddMemberDialogComponent implements OnInit {
     id: '',
     item: {
       active: 'true',
-      current_belt: '',
+      current_belt: '10gup',
       email: '',
       name: '',
       phone: '',
@@ -40,7 +40,7 @@ export class AddMemberDialogComponent implements OnInit {
   }
 
   getBelts() {
-    this.itemRef = this.db.object(this.globalDataBase + 'belts');
+    this.itemRef = this.db.object('general/belts');
     this.itemRef.snapshotChanges()
       .subscribe(action => {
         this.belts = action.payload.val();
@@ -48,7 +48,7 @@ export class AddMemberDialogComponent implements OnInit {
   }
 
   getRoles() {
-    this.itemRef = this.db.object(this.globalDataBase + 'roles');
+    this.itemRef = this.db.object('general/roles');
     this.itemRef.snapshotChanges()
       .subscribe(action => {
         this.roles = action.payload.val();
@@ -56,19 +56,27 @@ export class AddMemberDialogComponent implements OnInit {
   }
 
   addMember() {
-    const file = this.logoObject.target.files[0];
-    const ref = this.storage.ref('/' + this.globalDataBase + 'members/' + this.member.id + '/picture.png');
-    const task = ref.put(file);
+    if (this.logoObject) {
+      const file = this.logoObject.target.files[0];
+      const ref = this.storage.ref('/' + this.globalDataBase + 'members/' + this.member.id + '/picture.png');
+      const task = ref.put(file);
 
-    task.then(action => {
-      ref.getDownloadURL().subscribe(data => {
-        this.member.item.picture = data;
-        this.db.database.ref(this.globalDataBase + 'members/' + this.member.id).update(this.member.item);
+      task.then(action => {
+        ref.getDownloadURL().subscribe(data => {
+          this.member.item.picture = data;
+          this.db.database.ref(this.globalDataBase + 'members/' + this.member.id).update(this.member.item);
+        });
+        try {
+          const imgTemp = (document.getElementById('imgFile')) as HTMLImageElement;
+          imgTemp.src = 'assets/img/default-image.jpg';
+        } catch (e) {
+          console.log('uwu');
+        }
+        this.logoObject = null;
       });
-      const imgTemp = (document.getElementById('imgFile')) as HTMLImageElement;
-      imgTemp.src = 'assets/img/default-image.jpg';
-    });
-
+    } else {
+      this.db.database.ref(this.globalDataBase + 'members/' + this.member.id).update(this.member.item);
+    }
     this.dialogRef.close();
   }
 

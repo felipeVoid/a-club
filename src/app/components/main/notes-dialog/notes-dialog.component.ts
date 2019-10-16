@@ -40,7 +40,7 @@ export class NotesDialogComponent implements OnInit {
   }
 
   addNote(value) {
-    this.notesList.push({ text: value.value });
+    this.notesList.push({ text: value.value, date: this.getDate() });
     value.value = '';
   }
 
@@ -50,5 +50,18 @@ export class NotesDialogComponent implements OnInit {
 
   closeDialog() {
     this.dialogRef.close();
+  }
+
+  getDate() {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+
+    const hh = String(today.getHours()).padStart(2, '0');
+    const mmm = String(today.getMinutes()).padStart(2, '0');
+    const ss = String(today.getSeconds()).padStart(2, '0');
+
+    return  mm + '/' + dd + '/' + yyyy + 'T' + hh + ':' + mmm + ':' + ss;
   }
 }

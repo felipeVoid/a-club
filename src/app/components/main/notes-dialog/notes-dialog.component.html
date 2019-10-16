@@ -2,6 +2,7 @@
 <div mat-dialog-content>
   <mat-progress-bar *ngIf="showProgress" mode="indeterminate"></mat-progress-bar>
   <mat-form-field appearance="outline" *ngFor="let item of notesList" class="found-item">
+    <mat-label>{{item.date}}</mat-label>
     <input matInput [(ngModel)]="item.text">
     <mat-icon matSuffix (click)="deleteNote(item)" aria-hidden="false" aria-label="icon" color="primary">delete</mat-icon>
   </mat-form-field>

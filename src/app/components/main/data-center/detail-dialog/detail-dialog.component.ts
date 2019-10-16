@@ -11,7 +11,19 @@ export class DetailDialogComponent implements OnInit {
   itemRef: AngularFireObject<any>;
   globalDataBase = '';
   user: any;
-
+  member = {
+    id: '',
+    item: {
+      active: 'true',
+      current_belt: '10gup',
+      email: '',
+      name: '',
+      phone: '',
+      picture: '',
+      role: 'alumno',
+      training_address: ''
+    }
+  };
   constructor(public dialogRef: MatDialogRef<DetailDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private db: AngularFireDatabase) { }

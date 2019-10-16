@@ -11,7 +11,7 @@ import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.co
 })
 
 export class DataCenterComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'training_address', 'current_belt', 'money', 'edit'];
+  displayedColumns: string[] = ['name', 'training_address', 'current_belt', 'edit']; // 'money'
   user: any;
   members: any;
   membersList = [];

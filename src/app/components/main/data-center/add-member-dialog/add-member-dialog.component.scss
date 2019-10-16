@@ -1,0 +1,26 @@
+.form-first {
+  mat-form-field {
+    top: 8px !important;
+  }
+}
+
+.file-input {
+  width: 100%;
+  text-align: center;
+  p {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  img {
+    height: 110px;
+    border-radius: 5px;
+    &:hover {
+      height: 106px;
+      border: 2px solid #673ab7;
+      border-radius: 5px;
+    }
+  }
+  input {
+    display: none;
+  }
+}
