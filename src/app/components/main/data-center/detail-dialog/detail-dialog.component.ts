@@ -33,7 +33,7 @@ export class DetailDialogComponent implements OnInit {
     this.listGup.push({grade: 8, date: '16-12-2013'});
     this.listDan.push({grade: 1, date: '12-10-2017'});
     this.listDan.push({grade: 2, date: '16-10-2019'});
-    this.dataSource = new MatTableDataSource(this.tempData);
+    // this.dataSource = new MatTableDataSource(this.tempData);
   }
 
   putMemberDetail() {
