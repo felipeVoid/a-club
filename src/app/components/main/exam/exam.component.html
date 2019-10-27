@@ -1,0 +1,54 @@
+<div class="container">
+  <div class="drag-container">
+    <h2>A</h2>
+    <div
+      cdkDropList
+      #aList="cdkDropList"
+      [cdkDropListData]="listA"
+      [cdkDropListConnectedTo]="[bList, cList, dList]"
+      class="list-container"
+      (cdkDropListDropped)="drop($event)">
+      <div (click)="selectedItem = item.name" class="box-container" *ngFor="let item of listA" cdkDrag>{{item.name}}</div>
+    </div>
+  </div>
+
+  <div class="drag-container">
+    <h2>B</h2>
+    <div
+      cdkDropList
+      #bList="cdkDropList"
+      [cdkDropListData]="listB"
+      [cdkDropListConnectedTo]="[aList, cList, dList]"
+      class="list-container"
+      (cdkDropListDropped)="drop($event)">
+      <div (click)="selectedItem = item.name" class="box-container" *ngFor="let item of listB" cdkDrag>{{item.name}}</div>
+    </div>
+  </div>
+
+  <div class="drag-container">
+    <h2>C</h2>
+    <div
+      cdkDropList
+      #cList="cdkDropList"
+      [cdkDropListData]="listC"
+      [cdkDropListConnectedTo]="[aList, bList, dList]"
+      class="list-container"
+      (cdkDropListDropped)="drop($event)">
+      <div (click)="selectedItem = item.name" class="box-container" *ngFor="let item of listC" cdkDrag>{{item.name}}</div>
+    </div>
+  </div>
+
+  <div class="drag-container">
+    <h2>D</h2>
+    <div
+      cdkDropList
+      #dList="cdkDropList"
+      [cdkDropListData]="listD"
+      [cdkDropListConnectedTo]="[aList, bList, cList]"
+      class="list-container"
+      (cdkDropListDropped)="drop($event)">
+      <div (click)="selectedItem = item.name" class="box-container" *ngFor="let item of listD" cdkDrag>{{item.name}}</div>
+    </div>
+  </div>
+  <div>{{selectedItem}}</div>
+</div>

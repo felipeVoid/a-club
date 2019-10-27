@@ -62,6 +62,6 @@ export class NotesDialogComponent implements OnInit {
     const mmm = String(today.getMinutes()).padStart(2, '0');
     const ss = String(today.getSeconds()).padStart(2, '0');
 
-    return  mm + '/' + dd + '/' + yyyy + 'T' + hh + ':' + mmm + ':' + ss;
+    return  dd + '/' + mm + '/' + yyyy + 'T' + hh + ':' + mmm + ':' + ss;
   }
 }

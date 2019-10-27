@@ -102,7 +102,7 @@
   </mat-form-field>
 
   <mat-form-field>
-    <mat-label>Teléfono</mat-label>
+    <mat-label>{{langObj.phone}}</mat-label>
     <input matInput [(ngModel)]="data.item.phone" [disabled]="disableInput">
   </mat-form-field>
 
@@ -120,7 +120,20 @@
     <input matInput [(ngModel)]="data.item.training_address" [disabled]="disableInput">
   </mat-form-field>
 
+  <mat-form-field *ngIf="false">
+    <mat-label>Lang</mat-label>
+    <mat-select #lang (selectionChange)="changeLang(lang.value)">
+      <mat-option value="eng">
+        Eng
+      </mat-option>
+      <mat-option value="spa">
+        Esp
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
 </div>
 <div mat-dialog-actions>
+  <button mat-button (click)="closeDialog()">Cerrar</button>
   <button (click)="putMemberDetail()" mat-raised-button color="primary">Guardar</button>
 </div>

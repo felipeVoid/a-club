@@ -5,6 +5,7 @@ import {HomeComponent} from './components/main/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {AuthGuard} from './services/auth.guard';
 import {DataCenterComponent} from './components/main/data-center/data-center.component';
+import {ExamComponent} from './components/main/exam/exam.component';
 
 
 const routes: Routes = [
@@ -15,6 +16,7 @@ const routes: Routes = [
     children: [
       { path: '', component: HomeComponent, canActivate: [AuthGuard]},
       { path: 'datacenter', component: DataCenterComponent, canActivate: [AuthGuard]},
+      { path: 'exam', component: ExamComponent, canActivate: [AuthGuard]},
     ]
   },
   { path: 'login', component: LoginComponent}
@@ -25,14 +27,3 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
-
-/*
-{
-    path: '',
-    component: MainComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', component: HomeComponent, canActivate: [AuthGuard]},
-    ]
-  }
- */

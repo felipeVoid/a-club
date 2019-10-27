@@ -23,8 +23,11 @@ import {
   MatTooltipModule,
   MatDialogModule,
   MatMenuModule,
-  MatProgressBarModule, MatExpansionModule
+  MatProgressBarModule,
+  MatExpansionModule
 } from '@angular/material';
+
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HomeComponent } from './components/main/home/home.component';
@@ -39,6 +42,7 @@ import { DetailDialogComponent } from './components/main/data-center/detail-dial
 import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialog.component';
 import { AddMemberDialogComponent } from './components/main/data-center/add-member-dialog/add-member-dialog.component';
 import {AngularFireStorage} from '@angular/fire/storage';
+import { ExamComponent } from './components/main/exam/exam.component';
 
 
 
@@ -51,7 +55,8 @@ import {AngularFireStorage} from '@angular/fire/storage';
     DataCenterComponent,
     DetailDialogComponent,
     NotesDialogComponent,
-    AddMemberDialogComponent
+    AddMemberDialogComponent,
+    ExamComponent
   ],
   imports: [
     BrowserModule,
@@ -75,6 +80,7 @@ import {AngularFireStorage} from '@angular/fire/storage';
     MatMenuModule,
     MatProgressBarModule,
     MatExpansionModule,
+    DragDropModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     ChartsModule

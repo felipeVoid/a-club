@@ -19,6 +19,12 @@ export class DetailDialogComponent implements OnInit {
   displayedColumns: string[] = ['grade', 'date'];
   listGup = [];
   listDan = [];
+
+  langObj = {
+    phone: 'Teléfono',
+    name: 'Nombre'
+  };
+
   constructor(public dialogRef: MatDialogRef<DetailDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private db: AngularFireDatabase) { }
@@ -47,6 +53,10 @@ export class DetailDialogComponent implements OnInit {
     this.breakpoint = (eventWidth <= 550) ? 1 : 2;
   }
 
+  closeDialog() {
+    this.dialogRef.close();
+  }
+
   getBelts() {
     this.itemRef = this.db.object('general/belts');
     this.itemRef.snapshotChanges()
@@ -61,5 +71,18 @@ export class DetailDialogComponent implements OnInit {
       .subscribe(action => {
         this.roles = action.payload.val();
       });
+  }
+
+  changeLang(value) {
+    switch (value) {
+      case 'eng':
+        this.langObj.phone = 'Phone';
+        this.langObj.name = 'Name';
+        break;
+      case 'spa':
+        this.langObj.phone = 'Teléfono';
+        this.langObj.name = 'Nombre';
+        break;
+    }
   }
 }
