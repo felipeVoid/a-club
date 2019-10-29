@@ -18,6 +18,11 @@
   </mat-form-field>
 
   <mat-form-field appearance="outline">
+    <mat-label>Fecha de nacimiento</mat-label>
+    <input matInput type="date" [(ngModel)]="member.item.birth_date" min="1900-01-01" max="2019-12-31">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
     <mat-label>Grado</mat-label>
     <mat-select [(value)]="member.item.current_belt">
       <mat-option *ngFor="let belt of belts" [value]="belt">

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
-import {MatDialogRef, MatTableDataSource} from '@angular/material';
+import {DateAdapter, MatDialogRef, MatTableDataSource} from '@angular/material';
 import {AngularFireStorage} from '@angular/fire/storage';
 
 @Component({
@@ -18,6 +18,7 @@ export class AddMemberDialogComponent implements OnInit {
     id: '',
     item: {
       active: 'true',
+      birth_date: '',
       current_belt: '10gup',
       email: '',
       name: '',
@@ -64,6 +65,8 @@ export class AddMemberDialogComponent implements OnInit {
       task.then(action => {
         ref.getDownloadURL().subscribe(data => {
           this.member.item.picture = data;
+          const d = new Date(this.member.item.birth_date);
+          this.member.item.birth_date = d.getDate() + '-' + (d.getMonth() + 1) + '-' + d.getFullYear();
           this.db.database.ref(this.globalDataBase + 'members/' + this.member.id).update(this.member.item);
         });
         try {

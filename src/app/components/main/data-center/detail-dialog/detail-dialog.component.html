@@ -30,6 +30,11 @@
     <input matInput [(ngModel)]="data.item.name" [disabled]="disableInput">
   </mat-form-field>
 
+  <mat-form-field>
+    <mat-label>Fecha de nacimiento</mat-label>
+    <input matInput type="date" [(ngModel)]="data.item.birth_date" min="1900-01-01" max="2019-12-31" [disabled]="disableInput">
+  </mat-form-field>
+
   <mat-accordion *ngIf="true">
     <mat-expansion-panel>
       <mat-expansion-panel-header>
