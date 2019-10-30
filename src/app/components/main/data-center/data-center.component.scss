@@ -39,16 +39,17 @@ table{
 
 .inactive{
   background-color: #f3f3f3 !important;
-  color: #dddddd !important;
+  color: #cfcfcf !important;
   border-left: 1px solid #e0e0e0;
 }
 
 .add-resp{
   cursor: pointer;
-  font-size: 20px;
+  font-size: 18px;
   vertical-align: center;
+  color: #3bac01;
   &:hover{
-    color: #46cc01;
+    color: #4ee301;
   }
 }
 

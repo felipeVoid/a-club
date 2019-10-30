@@ -67,7 +67,7 @@
 
                 </ng-container>
                 <mat-icon class="add-resp" [matMenuTriggerFor]="menuResp" matTooltip="Asignar apoderado"
-                          matTooltipPosition="right">group_add</mat-icon>
+                          matTooltipPosition="right">add</mat-icon>
                 <mat-menu #menuResp="matMenu">
                   <div mat-menu-item *ngFor="let obj of responsables" (click)="addResp(element.id, obj.id)">
                     <span>{{obj.id}} - <b>{{ obj.name }}</b></span>
