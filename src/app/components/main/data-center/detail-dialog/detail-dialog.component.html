@@ -21,6 +21,7 @@
           <mat-label>Rut</mat-label>
           <input matInput [value]="data.idItem" disabled>
         </mat-form-field>
+        <mat-slide-toggle color="primary" (change)="activeAction()" [(ngModel)]="tempActive">Miembro activo</mat-slide-toggle>
       </div>
     </mat-grid-tile>
   </mat-grid-list>
@@ -35,7 +36,16 @@
     <input matInput type="date" [(ngModel)]="data.item.birth_date" min="1900-01-01" max="2019-12-31" [disabled]="disableInput">
   </mat-form-field>
 
-  <mat-accordion *ngIf="true">
+  <mat-form-field>
+    <mat-label>Rol</mat-label>
+    <mat-select [(value)]="data.item.role" [disabled]="disableInput" (selectionChange)="checkRole(data.item.role)">
+      <mat-option *ngFor="let role of roles" [value]="role">
+        {{role}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-accordion *ngIf="true" id="gradesTables">
     <mat-expansion-panel>
       <mat-expansion-panel-header>
         <mat-panel-title>
@@ -92,13 +102,18 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <mat-form-field>
+  <mat-form-field id="beltField">
     <mat-label>Grado</mat-label>
     <mat-select [(value)]="data.item.current_belt" [disabled]="disableInput">
       <mat-option *ngFor="let belt of belts" [value]="belt">
         {{belt}}
       </mat-option>
     </mat-select>
+  </mat-form-field>
+
+  <mat-form-field id="dojangField" >
+    <mat-label>Dojang</mat-label>
+    <input matInput [(ngModel)]="data.item.training_address" [disabled]="disableInput">
   </mat-form-field>
 
   <mat-form-field>
@@ -109,20 +124,6 @@
   <mat-form-field>
     <mat-label>{{langObj.phone}}</mat-label>
     <input matInput [(ngModel)]="data.item.phone" [disabled]="disableInput">
-  </mat-form-field>
-
-  <mat-form-field>
-    <mat-label>Rol</mat-label>
-    <mat-select [(value)]="data.item.role" [disabled]="disableInput">
-      <mat-option *ngFor="let role of roles" [value]="role">
-        {{role}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field>
-    <mat-label>Dojang</mat-label>
-    <input matInput [(ngModel)]="data.item.training_address" [disabled]="disableInput">
   </mat-form-field>
 
   <mat-form-field *ngIf="false">

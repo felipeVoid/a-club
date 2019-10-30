@@ -23,16 +23,32 @@ table{
   color: #3caf01;
   font-size: 26px;
   &:hover {
-    color: #54ff01;
+    color: #4ae201;
   }
 }
 
 .edit {
   cursor: pointer;
-  color: #d8c600;
+  color: #e3d000;
   font-size: 26px;
   &:hover {
-    color: #ffed00;
+    color: #f1df00;
+  }
+}
+
+
+.inactive{
+  background-color: #f3f3f3 !important;
+  color: #dddddd !important;
+  border-left: 1px solid #e0e0e0;
+}
+
+.add-resp{
+  cursor: pointer;
+  font-size: 20px;
+  vertical-align: center;
+  &:hover{
+    color: #46cc01;
   }
 }
 
@@ -50,4 +66,11 @@ table{
   height:60px;
   bottom:20px;
   right:20px;
+}
+
+.resp{
+  color: #4b4091;
+  &:hover{
+    color: #7766e5;
+  }
 }

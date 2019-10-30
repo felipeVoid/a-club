@@ -25,12 +25,14 @@ export class DetailDialogComponent implements OnInit {
     name: 'Nombre'
   };
 
+  tempActive = true;
   constructor(public dialogRef: MatDialogRef<DetailDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private db: AngularFireDatabase) { }
 
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem('data'));
+    this.globalDataBase = '/users/' + this.user.uid + '/';
     this.breakpoint = (window.innerWidth <= 400) ? 1 : 6;
     this.onResize(window.innerWidth);
     this.getBelts();
@@ -40,10 +42,10 @@ export class DetailDialogComponent implements OnInit {
     this.listDan.push({grade: 1, date: '12-10-2017'});
     this.listDan.push({grade: 2, date: '16-10-2019'});
     // this.dataSource = new MatTableDataSource(this.tempData);
+    this.tempActive = (this.data.item.active == 'true');
   }
 
   putMemberDetail() {
-    this.globalDataBase = '/users/' + this.user.uid + '/';
     this.itemRef = this.db.object(this.globalDataBase + 'members/' + this.data.idItem);
     this.itemRef.update(this.data.item);
     this.dialogRef.close();
@@ -70,6 +72,7 @@ export class DetailDialogComponent implements OnInit {
     this.itemRef.snapshotChanges()
       .subscribe(action => {
         this.roles = action.payload.val();
+        this.checkRole(this.data.item.role);
       });
   }
 
@@ -84,5 +87,21 @@ export class DetailDialogComponent implements OnInit {
         this.langObj.name = 'Nombre';
         break;
     }
+  }
+
+  checkRole(roleSelected) {
+    if (roleSelected == 'apoderado') {
+      document.getElementById('beltField').style.display = 'none';
+      document.getElementById('dojangField').style.display = 'none';
+      document.getElementById('gradesTables').style.display = 'none';
+    } else {
+      document.getElementById('beltField').style.display = 'inline-block';
+      document.getElementById('dojangField').style.display = 'inline-block';
+      document.getElementById('gradesTables').style.display = 'block';
+    }
+  }
+
+  activeAction() {
+    this.data.item.active = String(this.tempActive);
   }
 }

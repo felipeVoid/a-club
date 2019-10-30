@@ -11,11 +11,14 @@ import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.co
 })
 
 export class DataCenterComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'training_address', 'current_belt', 'edit']; // 'money'
+  displayedColumns: string[] = ['name', 'training_address', 'current_belt', 'money', 'edit']; // 'money'
+  displayedColumns2: string[] = ['name', 'edit'];
   user: any;
-  members: any;
+  members = [];
   membersList = [];
+  responsables = [];
   dataSource = new MatTableDataSource();
+  dataSource2 = new MatTableDataSource();
   itemRef: AngularFireObject<any>;
   globalDataBase = '';
   showProgress = true;
@@ -34,27 +37,47 @@ export class DataCenterComponent implements OnInit {
     this.itemRef.snapshotChanges()
       .subscribe(action => {
         this.members = action.payload.val();
-        this.membersList = [];
+        const tempList = [];
+
         for (const obj in this.members) {
           if (this.members[obj]) {
-            this.membersList.push({
+            tempList.push({
               id: obj,
               dojo: this.members[obj].training_address,
               name: this.members[obj].name,
               grade: this.members[obj].current_belt,
-              item: this.members[obj]
+              item: this.members[obj],
+              role: this.members[obj].role,
+              responsable: this.members[obj].responsable
             });
           }
         }
+
+        this.membersList = tempList.filter(obj => obj.role != 'apoderado');
+        this.responsables = tempList.filter(obj => obj.role == 'apoderado');
+
         if (this.membersList.length > 0) {
+          for (const obj of this.membersList) {
+            if (obj.responsable) {
+              for (const res of obj.responsable) {
+                if (this.responsables.filter(x => x.id == res).length <= 0) {
+                  obj.item.responsable = obj.item.responsable.filter(y => y != res);
+                  this.updateMemberById(obj.item, obj.id);
+                }
+              }
+            }
+          }
           this.dataSource = new MatTableDataSource(this.membersList);
+        }
+        if (this.responsables.length > 0) {
+          this.dataSource2 = new MatTableDataSource(this.responsables);
         }
         this.showProgress = false;
       });
   }
 
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  applyFilter(filterValue: string, source) {
+    source.filter = filterValue.trim().toLowerCase();
   }
 
   checkGradeColorPrimary(grade) {
@@ -137,5 +160,35 @@ export class DataCenterComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       // console.log('The dialog was closed');
     });
+  }
+
+  openDialogMemberDetailById(id) {
+    const data = this.responsables.filter(x => x.id == id);
+    const dialogRef = this.dialog.open(DetailDialogComponent, {
+      width: '750px',
+      data: {item: data[0].item, idItem: id}
+    });
+  }
+
+  addResp(memberId, respId) {
+    const data = this.membersList.filter(x => x.id == memberId);
+    if (!data[0].item.responsable) {
+      data[0].item.responsable = [];
+    }
+    data[0].item.responsable.push(respId);
+    this.updateMemberById(data[0].item, memberId);
+  }
+
+  deleteResp(memberId, respId) {
+    const data = this.membersList.filter(x => x.id == memberId);
+    if (data[0].item.responsable) {
+      data[0].item.responsable = data[0].item.responsable.filter(obj => obj != respId);
+      this.updateMemberById(data[0].item, memberId);
+    }
+  }
+
+  updateMemberById(data, memberId) {
+    this.itemRef = this.db.object(this.globalDataBase + 'members/' + memberId);
+    this.itemRef.update(data);
   }
 }

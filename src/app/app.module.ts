@@ -24,7 +24,8 @@ import {
   MatDialogModule,
   MatMenuModule,
   MatProgressBarModule,
-  MatExpansionModule
+  MatExpansionModule,
+  MatSlideToggleModule
 } from '@angular/material';
 
 import {DragDropModule} from '@angular/cdk/drag-drop';
@@ -43,8 +44,6 @@ import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialo
 import { AddMemberDialogComponent } from './components/main/data-center/add-member-dialog/add-member-dialog.component';
 import {AngularFireStorage} from '@angular/fire/storage';
 import { ExamComponent } from './components/main/exam/exam.component';
-
-
 
 @NgModule({
   declarations: [
@@ -81,6 +80,7 @@ import { ExamComponent } from './components/main/exam/exam.component';
     MatProgressBarModule,
     MatExpansionModule,
     DragDropModule,
+    MatSlideToggleModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     ChartsModule
