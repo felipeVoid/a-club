@@ -1,7 +1,10 @@
 <h1 mat-dialog-title>Detalles</h1>
 <div class="align-left">
   <span>Editar: </span>
-  <button [class]="disableInput ? 'mat-raised-button mat-button-base mat-primary' : 'mat-raised-button edit-on'" (click)="disableInput = !disableInput" mat-raised-button color="primary">{{disableInput ? 'Off' : 'On'}}</button>
+  <button [class]="disableInput ? 'mat-raised-button mat-button-base mat-primary' : 'mat-raised-button edit-on'" (click)="disableInput = !disableInput" mat-raised-button color="primary">
+    <mat-icon *ngIf="disableInput">lock</mat-icon>
+    <mat-icon *ngIf="!disableInput">lock_open</mat-icon>
+  </button>
 </div>
 <br>
 <div mat-dialog-content>

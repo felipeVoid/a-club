@@ -22,6 +22,10 @@ export class DataCenterComponent implements OnInit {
   itemRef: AngularFireObject<any>;
   globalDataBase = '';
   showProgress = true;
+  respName = 'NN';
+  activeMembers = [];
+  inactiveMembers = [];
+  tempActive = true;
 
   constructor(private db: AngularFireDatabase,
               public dialog: MatDialog) { }
@@ -36,6 +40,7 @@ export class DataCenterComponent implements OnInit {
     this.itemRef = this.db.object(this.globalDataBase + 'members');
     this.itemRef.snapshotChanges()
       .subscribe(action => {
+        this.tempActive = true;
         this.members = action.payload.val();
         const tempList = [];
 
@@ -48,12 +53,15 @@ export class DataCenterComponent implements OnInit {
               grade: this.members[obj].current_belt,
               item: this.members[obj],
               role: this.members[obj].role,
-              responsable: this.members[obj].responsable
+              responsable: this.members[obj].responsable,
+              active: this.members[obj].active
             });
           }
         }
 
         this.membersList = tempList.filter(obj => obj.role != 'apoderado');
+        this.activeMembers = this.membersList.filter(obj => obj.active == 'true');
+        this.inactiveMembers = this.membersList.filter(obj => obj.active == 'false');
         this.responsables = tempList.filter(obj => obj.role == 'apoderado');
 
         if (this.membersList.length > 0) {
@@ -67,7 +75,8 @@ export class DataCenterComponent implements OnInit {
               }
             }
           }
-          this.dataSource = new MatTableDataSource(this.membersList);
+
+          this.dataSource = new MatTableDataSource(this.activeMembers);
         }
         if (this.responsables.length > 0) {
           this.dataSource2 = new MatTableDataSource(this.responsables);
@@ -190,5 +199,17 @@ export class DataCenterComponent implements OnInit {
   updateMemberById(data, memberId) {
     this.itemRef = this.db.object(this.globalDataBase + 'members/' + memberId);
     this.itemRef.update(data);
+  }
+
+  getRespName(id) {
+    this.respName = this.responsables.filter(x => x.id == id)[0].name;
+  }
+
+  changeDataSource(newDS) {
+    if (newDS) {
+      this.dataSource = new MatTableDataSource(this.activeMembers);
+    } else {
+      this.dataSource = new MatTableDataSource(this.inactiveMembers);
+    }
   }
 }
