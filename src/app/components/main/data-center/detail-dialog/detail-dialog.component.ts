@@ -104,4 +104,13 @@ export class DetailDialogComponent implements OnInit {
   activeAction() {
     this.data.item.active = String(this.tempActive);
   }
+
+  getDate(dateIn) {
+    const today = new Date(dateIn);
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+
+    return  dd + '-' + mm + '-' + yyyy;
+  }
 }

@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Dineros</h1>
+
+<div mat-dialog-content>
+  <div *ngIf="data.item.money">
+    ${{data.item.money.amount}}
+  </div>
+  <div *ngIf="!data.item.money">NO DATA</div>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="closeDialog()">Cerrar</button>
+</div>

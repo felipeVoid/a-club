@@ -3,6 +3,7 @@ import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
 import {MatDialog, MatTableDataSource} from '@angular/material';
 import {DetailDialogComponent} from './detail-dialog/detail-dialog.component';
 import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.component';
+import {MoneyDialogComponent} from './money-dialog/money-dialog.component';
 
 @Component({
   selector: 'app-data-center',
@@ -176,6 +177,13 @@ export class DataCenterComponent implements OnInit {
     const dialogRef = this.dialog.open(DetailDialogComponent, {
       width: '750px',
       data: {item: data[0].item, idItem: id}
+    });
+  }
+
+  openDialogMoney(data, id) {
+    const dialogRef = this.dialog.open(MoneyDialogComponent, {
+      width: '750px',
+      data: {item: data, idItem: id}
     });
   }
 

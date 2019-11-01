@@ -44,6 +44,7 @@ import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialo
 import { AddMemberDialogComponent } from './components/main/data-center/add-member-dialog/add-member-dialog.component';
 import {AngularFireStorage} from '@angular/fire/storage';
 import { ExamComponent } from './components/main/exam/exam.component';
+import { MoneyDialogComponent } from './components/main/data-center/money-dialog/money-dialog.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { ExamComponent } from './components/main/exam/exam.component';
     DetailDialogComponent,
     NotesDialogComponent,
     AddMemberDialogComponent,
-    ExamComponent
+    ExamComponent,
+    MoneyDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -93,7 +95,8 @@ import { ExamComponent } from './components/main/exam/exam.component';
   entryComponents: [
     DetailDialogComponent,
     NotesDialogComponent,
-    AddMemberDialogComponent
+    AddMemberDialogComponent,
+    MoneyDialogComponent
   ],
   bootstrap: [AppComponent]
 })
