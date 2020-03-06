@@ -23,12 +23,26 @@
   </mat-form-field>
 
   <mat-form-field appearance="outline">
+    <mat-label>Rol</mat-label>
+    <mat-select [(value)]="member.item.role" (selectionChange)="checkRole(member.item.role)">
+      <mat-option *ngFor="let role of roles" [value]="role">
+        {{role}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" id="beltField">
     <mat-label>Grado</mat-label>
     <mat-select [(value)]="member.item.current_belt">
       <mat-option *ngFor="let belt of belts" [value]="belt">
         {{belt}}
       </mat-option>
     </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" id="dojangField">
+    <mat-label>Dojang</mat-label>
+    <input matInput [(ngModel)]="member.item.training_address">
   </mat-form-field>
 
   <mat-form-field appearance="outline">
@@ -39,20 +53,6 @@
   <mat-form-field appearance="outline">
     <mat-label>Teléfono</mat-label>
     <input matInput [(ngModel)]="member.item.phone">
-  </mat-form-field>
-
-  <mat-form-field appearance="outline">
-    <mat-label>Rol</mat-label>
-    <mat-select [(value)]="member.item.role">
-      <mat-option *ngFor="let role of roles" [value]="role">
-        {{role}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline">
-    <mat-label>Dojang</mat-label>
-    <input matInput [(ngModel)]="member.item.training_address">
   </mat-form-field>
 
 </div>

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
-import {DateAdapter, MatDialogRef, MatTableDataSource} from '@angular/material';
+import {MatDialogRef} from '@angular/material';
 import {AngularFireStorage} from '@angular/fire/storage';
 
 @Component({
@@ -73,7 +73,7 @@ export class AddMemberDialogComponent implements OnInit {
           const imgTemp = (document.getElementById('imgFile')) as HTMLImageElement;
           imgTemp.src = 'assets/img/default-image.jpg';
         } catch (e) {
-          console.log('uwu');
+          // console.log('uwu');
         }
         this.logoObject = null;
       });
@@ -101,5 +101,15 @@ export class AddMemberDialogComponent implements OnInit {
       console.log(e);
     }
     this.logoObject = event;
+  }
+
+  checkRole(roleSelected) {
+    if (roleSelected == 'apoderado') {
+      document.getElementById('beltField').style.display = 'none';
+      document.getElementById('dojangField').style.display = 'none';
+    } else {
+      document.getElementById('beltField').style.display = 'inline-block';
+      document.getElementById('dojangField').style.display = 'inline-block';
+    }
   }
 }

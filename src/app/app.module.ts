@@ -24,7 +24,8 @@ import {
   MatDialogModule,
   MatMenuModule,
   MatProgressBarModule,
-  MatExpansionModule
+  MatExpansionModule,
+  MatSlideToggleModule
 } from '@angular/material';
 
 import {DragDropModule} from '@angular/cdk/drag-drop';
@@ -33,6 +34,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HomeComponent } from './components/main/home/home.component';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireModule} from '@angular/fire';
+import {environment} from '../environments/environment';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {AuthGuard} from './services/auth.guard';
 import { DataCenterComponent } from './components/main/data-center/data-center.component';
@@ -42,9 +44,7 @@ import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialo
 import { AddMemberDialogComponent } from './components/main/data-center/add-member-dialog/add-member-dialog.component';
 import {AngularFireStorage} from '@angular/fire/storage';
 import { ExamComponent } from './components/main/exam/exam.component';
-import {environment} from '../environments/environment';
-
-
+import { MoneyDialogComponent } from './components/main/data-center/money-dialog/money-dialog.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +56,8 @@ import {environment} from '../environments/environment';
     DetailDialogComponent,
     NotesDialogComponent,
     AddMemberDialogComponent,
-    ExamComponent
+    ExamComponent,
+    MoneyDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -81,6 +82,7 @@ import {environment} from '../environments/environment';
     MatProgressBarModule,
     MatExpansionModule,
     DragDropModule,
+    MatSlideToggleModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     ChartsModule
@@ -93,7 +95,8 @@ import {environment} from '../environments/environment';
   entryComponents: [
     DetailDialogComponent,
     NotesDialogComponent,
-    AddMemberDialogComponent
+    AddMemberDialogComponent,
+    MoneyDialogComponent
   ],
   bootstrap: [AppComponent]
 })

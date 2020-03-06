@@ -3,6 +3,7 @@ import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
 import {MatDialog, MatTableDataSource} from '@angular/material';
 import {DetailDialogComponent} from './detail-dialog/detail-dialog.component';
 import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.component';
+import {MoneyDialogComponent} from './money-dialog/money-dialog.component';
 
 @Component({
   selector: 'app-data-center',
@@ -11,14 +12,21 @@ import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.co
 })
 
 export class DataCenterComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'training_address', 'current_belt', 'edit']; // 'money'
+  displayedColumns: string[] = ['name', 'training_address', 'current_belt', 'money', 'edit']; // 'money'
+  displayedColumns2: string[] = ['name', 'edit'];
   user: any;
-  members: any;
+  members = [];
   membersList = [];
+  responsables = [];
   dataSource = new MatTableDataSource();
+  dataSource2 = new MatTableDataSource();
   itemRef: AngularFireObject<any>;
   globalDataBase = '';
   showProgress = true;
+  respName = 'NN';
+  activeMembers = [];
+  inactiveMembers = [];
+  tempActive = true;
 
   constructor(private db: AngularFireDatabase,
               public dialog: MatDialog) { }
@@ -33,28 +41,53 @@ export class DataCenterComponent implements OnInit {
     this.itemRef = this.db.object(this.globalDataBase + 'members');
     this.itemRef.snapshotChanges()
       .subscribe(action => {
+        this.tempActive = true;
         this.members = action.payload.val();
-        this.membersList = [];
+        const tempList = [];
+
         for (const obj in this.members) {
           if (this.members[obj]) {
-            this.membersList.push({
+            tempList.push({
               id: obj,
               dojo: this.members[obj].training_address,
               name: this.members[obj].name,
               grade: this.members[obj].current_belt,
-              item: this.members[obj]
+              item: this.members[obj],
+              role: this.members[obj].role,
+              responsable: this.members[obj].responsable,
+              active: this.members[obj].active
             });
           }
         }
+
+        this.membersList = tempList.filter(obj => obj.role != 'apoderado');
+        this.activeMembers = this.membersList.filter(obj => obj.active == 'true');
+        this.inactiveMembers = this.membersList.filter(obj => obj.active == 'false');
+        this.responsables = tempList.filter(obj => obj.role == 'apoderado');
+
         if (this.membersList.length > 0) {
-          this.dataSource = new MatTableDataSource(this.membersList);
+          for (const obj of this.membersList) {
+            if (obj.responsable) {
+              for (const res of obj.responsable) {
+                if (this.responsables.filter(x => x.id == res).length <= 0) {
+                  obj.item.responsable = obj.item.responsable.filter(y => y != res);
+                  this.updateMemberById(obj.item, obj.id);
+                }
+              }
+            }
+          }
+
+          this.dataSource = new MatTableDataSource(this.activeMembers);
+        }
+        if (this.responsables.length > 0) {
+          this.dataSource2 = new MatTableDataSource(this.responsables);
         }
         this.showProgress = false;
       });
   }
 
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  applyFilter(filterValue: string, source) {
+    source.filter = filterValue.trim().toLowerCase();
   }
 
   checkGradeColorPrimary(grade) {
@@ -137,5 +170,54 @@ export class DataCenterComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       // console.log('The dialog was closed');
     });
+  }
+
+  openDialogMemberDetailById(id) {
+    const data = this.responsables.filter(x => x.id == id);
+    const dialogRef = this.dialog.open(DetailDialogComponent, {
+      width: '750px',
+      data: {item: data[0].item, idItem: id}
+    });
+  }
+
+  openDialogMoney(data, id) {
+    const dialogRef = this.dialog.open(MoneyDialogComponent, {
+      width: '750px',
+      data: {item: data, idItem: id}
+    });
+  }
+
+  addResp(memberId, respId) {
+    const data = this.membersList.filter(x => x.id == memberId);
+    if (!data[0].item.responsable) {
+      data[0].item.responsable = [];
+    }
+    data[0].item.responsable.push(respId);
+    this.updateMemberById(data[0].item, memberId);
+  }
+
+  deleteResp(memberId, respId) {
+    const data = this.membersList.filter(x => x.id == memberId);
+    if (data[0].item.responsable) {
+      data[0].item.responsable = data[0].item.responsable.filter(obj => obj != respId);
+      this.updateMemberById(data[0].item, memberId);
+    }
+  }
+
+  updateMemberById(data, memberId) {
+    this.itemRef = this.db.object(this.globalDataBase + 'members/' + memberId);
+    this.itemRef.update(data);
+  }
+
+  getRespName(id) {
+    this.respName = this.responsables.filter(x => x.id == id)[0].name;
+  }
+
+  changeDataSource(newDS) {
+    if (newDS) {
+      this.dataSource = new MatTableDataSource(this.activeMembers);
+    } else {
+      this.dataSource = new MatTableDataSource(this.inactiveMembers);
+    }
   }
 }
