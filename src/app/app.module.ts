@@ -33,7 +33,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HomeComponent } from './components/main/home/home.component';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFireModule} from '@angular/fire';
-import {environment} from '../environments/environment';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {AuthGuard} from './services/auth.guard';
 import { DataCenterComponent } from './components/main/data-center/data-center.component';
@@ -43,6 +42,7 @@ import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialo
 import { AddMemberDialogComponent } from './components/main/data-center/add-member-dialog/add-member-dialog.component';
 import {AngularFireStorage} from '@angular/fire/storage';
 import { ExamComponent } from './components/main/exam/exam.component';
+import {environment} from '../environments/environment';
 
 
 
