@@ -18,7 +18,7 @@ export class MoneyDialogComponent implements OnInit {
 
   ngOnInit() {
     if (this.data.item.money) {
-      console.log(this.data.item.money);
+      console.log(this.data);
     }
     this.user = JSON.parse(localStorage.getItem('data'));
     this.globalDataBase = '/users/' + this.user.uid + '/';

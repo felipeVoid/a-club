@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
     if (!localStorage.getItem('data')) {
       this.login();
     } else {
-      this.init();
+      window.location.href = '';
     }
   }
   init() {
@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
         picture: data.additionalUserInfo.profile['picture'],
         name: data.additionalUserInfo.profile['name']
       }));
-      window.location.reload();
+      window.location.href = '';
     }).catch( error => {
       console.log(error);
     });

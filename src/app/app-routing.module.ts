@@ -14,8 +14,8 @@ const routes: Routes = [
     component: MainComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: '', component: HomeComponent, canActivate: [AuthGuard]},
-      { path: 'datacenter', component: DataCenterComponent, canActivate: [AuthGuard]},
+      { path: '', component: DataCenterComponent, canActivate: [AuthGuard]},
+      { path: 'chart', component: HomeComponent, canActivate: [AuthGuard]},
       { path: 'exam', component: ExamComponent, canActivate: [AuthGuard]},
     ]
   },
