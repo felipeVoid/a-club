@@ -1,0 +1,66 @@
+.art-container {
+    padding: 20px;
+}
+
+.boundary-art {
+    height: 500px;
+    width: 95%;
+    overflow: auto;
+    border: 1px solid #ff2c2c;
+}
+
+.remove-char {
+    cursor: pointer;
+    position: absolute;
+    left: -20px;
+    top: -20px;
+    z-index: 9999;
+    color: #ff2c2c;    
+    &:hover {
+        color: #9b0000;
+    }
+}
+
+.menu-art-zone {
+    margin: 40px;
+    z-index: 9999;
+    width: 88%;
+}
+
+.mat-accordion-edit {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    opacity: 0.8;
+    &:hover {
+        opacity: 1;
+    }
+    .mat-card-content-edit {
+        overflow: auto;
+        max-height: 400px;
+    }
+}
+
+.mat-card-extra {
+    margin-left: auto;
+    font-size: 12px;
+    font-style: italic;
+    color: #adadad;
+}
+
+.left-title {
+    flex-grow: 0 !important;
+}
+
+.mat-form-field-infix {
+    margin: 0 !important;
+}
+
+.text-center-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

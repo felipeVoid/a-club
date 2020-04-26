@@ -4,6 +4,9 @@ import {MatDialog, MatTableDataSource} from '@angular/material';
 import {DetailDialogComponent} from './detail-dialog/detail-dialog.component';
 import {AddMemberDialogComponent} from './add-member-dialog/add-member-dialog.component';
 import {MoneyDialogComponent} from './money-dialog/money-dialog.component';
+import { DojangDialogComponent } from './dojang-dialog/dojang-dialog.component';
+
+import 'firebase/database';
 
 @Component({
   selector: 'app-data-center',
@@ -61,9 +64,9 @@ export class DataCenterComponent implements OnInit {
         }
 
         this.membersList = tempList.filter(obj => obj.role != 'apoderado');
+        this.responsables = tempList.filter(obj => obj.role == 'apoderado');
         this.activeMembers = this.membersList.filter(obj => obj.active == 'true');
         this.inactiveMembers = this.membersList.filter(obj => obj.active == 'false');
-        this.responsables = tempList.filter(obj => obj.role == 'apoderado');
 
         if (this.membersList.length > 0) {
           for (const obj of this.membersList) {
@@ -163,8 +166,17 @@ export class DataCenterComponent implements OnInit {
     });
   }
 
-  openDialogAddMember(): void {
+  openDialogAddMember() {
     const dialogRef = this.dialog.open(AddMemberDialogComponent, {
+      width: '750px'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      // console.log('The dialog was closed');
+    });
+  }
+
+  openDialogAddDojang() {
+    const dialogRef = this.dialog.open(DojangDialogComponent, {
       width: '750px'
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -187,6 +199,13 @@ export class DataCenterComponent implements OnInit {
     });
   }
 
+  openDialogEditDojang(item_name) {
+    const dialogRef = this.dialog.open(DojangDialogComponent, {
+      width: '750px',
+      data: {name: item_name}
+    });
+  }
+
   addResp(memberId, respId) {
     const data = this.membersList.filter(x => x.id == memberId);
     if (!data[0].item.responsable) {
@@ -206,7 +225,7 @@ export class DataCenterComponent implements OnInit {
 
   updateMemberById(data, memberId) {
     this.itemRef = this.db.object(this.globalDataBase + 'members/' + memberId);
-    this.itemRef.update(data);
+    this.itemRef.set(data);
   }
 
   getRespName(id) {

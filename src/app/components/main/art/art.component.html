@@ -1,0 +1,235 @@
+<div class="art-container">
+    <div class="boundary-art">
+
+        <ng-container *ngFor="let char of artZone | keyvalue">
+            <div *ngIf="char.value"
+            (click)="editOptions(char.key)"
+            [style.position]="'relative'"
+            [style.left]="char.value.options.position.x + 'px'"
+            [style.top]="char.value.options.position.y + 'px'">
+    
+                <mat-icon *ngIf="selectedArt == char.key" class="remove-char" (click)="removeArtZoneChar()">cancel</mat-icon>
+    
+                <img *ngIf="char.value.content.image" alt="multi"
+                [style.border]="selectedArt == char.key ? '1px solid #ff2c2c' : ''"
+                [style.padding]="selectedArt == char.key ? '' : '1px'"
+                [style.position]="'relative'"
+                [style.width]="char.value.options.width"
+                [style.height]="char.value.options.height"
+                [style.z-index]="char.value.options.z_index"
+                [style.background-color]="char.value.options.background_color"
+                [style.opacity]="char.value.options.opacity"
+                [style.border-radius]="char.value.options.border_radius"
+                [style.transform]="char.value.options.transform"
+                [style.transform-origin]="char.value.options.transform_origin"
+                [src]="char.value.content.image">
+    
+                <p class="text-center-flex" *ngIf="char.value.content.text"
+                [style.border]="selectedArt == char.key ? '1px solid #ff2c2c' : ''"
+                [style.padding]="selectedArt == char.key ? '' : '1px'"
+                [style.position]="'relative'"
+                [style.margin]="'0'"
+                [style.text-align]="'center'"
+                [style.width]="char.value.options.width"
+                [style.height]="char.value.options.height"
+                [style.z-index]="char.value.options.z_index"
+                [style.background-color]="char.value.options.background_color"
+                [style.color]="char.value.options.color"
+                [style.opacity]="char.value.options.opacity"
+                [style.border-radius]="char.value.options.border_radius"
+                [style.font-size]="char.value.options.font_size"
+                [style.font-family]="char.value.options.font_family"
+                [style.transform]="char.value.options.transform"
+                [style.transform-origin]="char.value.options.transform_origin">
+                {{char.value.content.text}}
+                </p>
+    
+            </div>
+        </ng-container>
+    
+    </div>
+    
+    <mat-accordion class="mat-accordion-edit" *ngIf="selectedArt != '' && artZone[selectedArt]">
+    
+        <mat-expansion-panel #authorPanel (click)="enablePositionChange(authorPanel.expanded)">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="left-title">
+                <mat-icon>account_circle</mat-icon>
+              </mat-panel-title>
+              <mat-panel-description>
+                Author
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="container dis2">
+                <mat-card *ngIf="artZone[selectedArt].author">
+                    <mat-card-header>
+                        <img mat-card-avatar src="{{artZone[selectedArt].author.user.picture}}">
+                        <mat-card-title>{{artZone[selectedArt].author.user.name}}</mat-card-title>
+                        <mat-card-subtitle>{{artZone[selectedArt].author.user.email}}</mat-card-subtitle>
+                        <div class="mat-card-extra">
+                            <div>Author</div>
+                            <div>{{artZone[selectedArt].author.date}}</div>
+                        </div>
+                    </mat-card-header>
+                </mat-card>
+                <mat-card *ngIf="artZone[selectedArt].modified">
+                    <mat-card-header>
+                        <img mat-card-avatar src="{{artZone[selectedArt].modified.user.picture}}">
+                        <mat-card-title>{{artZone[selectedArt].modified.user.name}}</mat-card-title>
+                        <mat-card-subtitle>{{artZone[selectedArt].modified.user.email}}</mat-card-subtitle>
+                        <div class="mat-card-extra">
+                            <div>Last change</div>
+                            <div>{{artZone[selectedArt].modified.date}}</div>
+                        </div>
+                    </mat-card-header>            
+                </mat-card>
+            </div>
+        </mat-expansion-panel>
+    
+        <mat-expansion-panel #contentPanel (click)="enablePositionChange(contentPanel.expanded)">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="left-title">
+                <mat-icon>collections</mat-icon>
+              </mat-panel-title>
+              <mat-panel-description>
+                Content
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="mat-expansion-panel-content">
+                <mat-card>
+                    <mat-card-content class="mat-card-content-edit">
+                        <div class="container dis2">
+                            <mat-form-field appearance="outline">
+                                <mat-label>image</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].content.image" [value]="artZone[selectedArt].content.image" type="text" #imageIn>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>text</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].content.text" [value]="artZone[selectedArt].content.text" type="text" #textIn>
+                            </mat-form-field>
+                        </div>
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <button (click)="setArtZoneChar()" mat-raised-button color="primary">Save</button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </mat-expansion-panel>
+    
+        <mat-expansion-panel #positionPanel (click)="enablePositionChange(positionPanel.expanded)">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="left-title">
+                <mat-icon>photo_size_select_large</mat-icon>
+              </mat-panel-title>
+              <mat-panel-description>
+                Position
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="mat-expansion-panel-content">
+                <mat-card>                
+                    <mat-card-content class="mat-card-content-edit">
+                        <div class="container dis2">
+                            <mat-form-field appearance="outline">
+                                <mat-label>X</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].options.position.x" [value]="artZone[selectedArt].options.position.x" type="number" #xIn>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Y</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].options.position.y" [value]="artZone[selectedArt].options.position.y" type="number" #yIn>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>speed</mat-label>
+                                <input matInput min="1" max="100" [(ngModel)]="artZone[selectedArt].options.speed" [value]="artZone[selectedArt].options.speed" type="number" #speedIn>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>z_index</mat-label>
+                                <input matInput min="1" max="999" [(ngModel)]="artZone[selectedArt].options.z_index" [value]="artZone[selectedArt].options.z_index" type="number" #zIndexIn>
+                            </mat-form-field>
+                        </div>
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <button (click)="setArtZoneChar()" mat-raised-button color="primary">Save</button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </mat-expansion-panel>
+    
+        <mat-expansion-panel #optionsPanel (click)="enablePositionChange(optionsPanel.expanded)"l>
+            <mat-expansion-panel-header>
+              <mat-panel-title class="left-title">
+                <mat-icon>settings</mat-icon>
+              </mat-panel-title>
+              <mat-panel-description>
+                Options
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="mat-expansion-panel-content">
+                <mat-card>
+                    <mat-card-content class="mat-card-content-edit">
+                        <div class="container dis2">
+                            <mat-form-field appearance="outline">
+                                <mat-label>width</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].options.width" [value]="artZone[selectedArt].options.width" type="text" #widthIn>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>height</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].options.height" [value]="artZone[selectedArt].options.height" type="text" #heightIn>
+                            </mat-form-field>
+    
+                            <mat-form-field appearance="outline">
+                                <mat-label>background_color</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].options.background_color" [value]="artZone[selectedArt].options.background_color" type="text" #backgroundColorIn>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>opacity</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].options.opacity" [value]="artZone[selectedArt].options.opacity" type="text" #opacityIn>
+                            </mat-form-field>
+    
+                            <mat-form-field appearance="outline">
+                                <mat-label>transform</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].options.transform" [value]="artZone[selectedArt].options.transform" type="text" #transformIn>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                                <mat-label>transform_origin</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].options.transform_origin" [value]="artZone[selectedArt].options.transform_origin" type="text" #transformOriginIn>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>border_radius</mat-label>
+                                <input matInput [(ngModel)]="artZone[selectedArt].options.border_radius" [value]="artZone[selectedArt].options.border_radius" type="text" #borderRadiusIn>
+                            </mat-form-field>                            
+    
+                            <ng-container *ngIf="artZone[selectedArt].content.text">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>color</mat-label>
+                                    <input matInput [(ngModel)]="artZone[selectedArt].options.color" [value]="artZone[selectedArt].options.color" type="text" #colorIn>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline">
+                                    <mat-label>font_size</mat-label>
+                                    <input matInput [(ngModel)]="artZone[selectedArt].options.font_size" [value]="artZone[selectedArt].options.font_size" type="text" #fontSizeIn>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline">
+                                    <mat-label>font_family</mat-label>
+                                    <input matInput [(ngModel)]="artZone[selectedArt].options.font_family" [value]="artZone[selectedArt].options.font_family" type="text" #fontFamilyIn>
+                                </mat-form-field>
+                            </ng-container>
+                        </div>
+                    </mat-card-content>
+                    <mat-card-actions>
+                        <button (click)="setArtZoneChar()" mat-raised-button color="primary">Save</button>
+                    </mat-card-actions>
+                </mat-card>
+            </div>
+        </mat-expansion-panel>
+    
+    </mat-accordion>
+    
+    <div class="container dis3 menu-art-zone">
+        <mat-form-field appearance="outline">
+            <mat-label>Char Name</mat-label>
+            <input (click)="closeOptions()" matInput type="text" #nameIn>
+        </mat-form-field>
+        <button (click)="addArtZoneChar(nameIn)" mat-raised-button color="accent">Add new Char</button>
+        <button (click)="setArtZone()" mat-raised-button color="primary">Save All</button>
+    </div>
+</div>

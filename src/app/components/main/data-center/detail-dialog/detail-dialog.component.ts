@@ -15,6 +15,7 @@ export class DetailDialogComponent implements OnInit {
   disableInput = true;
   belts = [];
   roles = [];
+  dojangs = [];
   dataSource = new MatTableDataSource();
   displayedColumns: string[] = ['grade', 'date'];
   listGup = [];
@@ -37,6 +38,7 @@ export class DetailDialogComponent implements OnInit {
     this.onResize(window.innerWidth);
     this.getBelts();
     this.getRoles();
+    this.getDojangs();
     this.listGup.push({grade: 9, date: '12-10-2013'});
     this.listGup.push({grade: 8, date: '16-12-2013'});
     this.listDan.push({grade: 1, date: '12-10-2017'});
@@ -73,6 +75,14 @@ export class DetailDialogComponent implements OnInit {
       .subscribe(action => {
         this.roles = action.payload.val();
         this.checkRole(this.data.item.role);
+      });
+  }
+
+  getDojangs() {
+    this.itemRef = this.db.object(this.globalDataBase + 'dojangs');
+    this.itemRef.snapshotChanges()
+      .subscribe(action => {
+        this.dojangs = action.payload.val();
       });
   }
 

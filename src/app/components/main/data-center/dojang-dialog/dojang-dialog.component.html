@@ -1,0 +1,95 @@
+<h1 mat-dialog-title>Agregar Dojang</h1>
+<div mat-dialog-content>
+  <div class="container dis2">
+      <div>
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input #nameDoj [(ngModel)]="formDojang.name" matInput required>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Dirección</mat-label>
+            <input #addressDoj [(ngModel)]="formDojang.address" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>E-mail</mat-label>
+            <input #mailDoj [(ngModel)]="formDojang.mail" matInput>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Teléfono</mat-label>
+            <input #phoneDoj [(ngModel)]="formDojang.phone" matInput>
+          </mat-form-field>
+
+          <div class="container dis3">
+            <div>
+                <div>
+                    <mat-label>Día: </mat-label>
+                    <select #daySch>
+                        <option selected value="Lunes">Lunes</option>
+                        <option value="Martes">Martes</option>
+                        <option value="Miércoles">Miércoles</option>
+                        <option value="Jueves">Jueves</option>
+                        <option value="Viernes">Viernes</option>
+                        <option value="Sábado">Sábado</option>
+                        <option value="Domingo">Domingo</option>
+                    </select>
+                </div>
+                
+                <div>
+                  <mat-label>Duración: </mat-label>
+                  <input #durationSch type="number">
+                </div>
+                <div>
+                  <mat-label>Hora inicio: </mat-label>
+                  <input #timeSch type="text">
+                </div>
+            </div>
+            <ng-container *ngIf="scheduleAdd.length > 0">
+                <div *ngFor="let obj of scheduleAdd">
+                    <div>Día: {{obj.day}}</div>
+                    <div>Inicio: {{obj.time}}</div>
+                    <div>Hora inicio: {{obj.duration}}</div>
+                    <div>
+                      <button mat-button (click)="removeSchedule(obj)">Elimiar</button>
+                    </div>
+                </div>
+            </ng-container>
+          </div>
+      </div>
+      <div>
+        <ng-container *ngIf="dojangs">
+          <div style="height: 500px; overflow: auto; border: 2px solid grey; border-radius: 5px;">
+            <mat-tab-group headerPosition="below">
+              <mat-tab *ngFor="let obj of dojangs">
+                <ng-template mat-tab-label>
+                  <mat-icon>location_on</mat-icon>
+                </ng-template>
+                <mat-card class="mat-elevation-z8">
+                  <mat-card-header>
+                    <img class="cursor-pointer" *ngIf="!data" mat-card-avatar (click)="setEditDojang(obj.name)" src="assets/img/tatami.svg">
+                    <mat-icon class="cursor-pointer restore" *ngIf="data" mat-card-avatar (click)="restore()">highlight_off</mat-icon>
+                    <mat-card-title>{{obj.name}}</mat-card-title>
+                    <mat-card-subtitle>{{obj.address}}</mat-card-subtitle>
+                  </mat-card-header>
+                  <img mat-card-image src="https://altinfo.cl/wp-content/uploads/2019/12/GoogleMaps.png" alt="mappin">
+                  <mat-card-content>
+                    <p><strong>Teléfono: </strong>{{obj.phone}}</p>
+                    <p><strong>E-mail: </strong>{{obj.mail}}</p>
+                  </mat-card-content>
+                  <mat-card-actions>
+                    <button (click)="removeDojang(obj)" mat-raised-button color="primary">Elimiar</button>
+                  </mat-card-actions>
+                </mat-card>
+              </mat-tab>
+            </mat-tab-group>            
+          </div>
+        </ng-container>
+      </div>
+  </div>
+
+  <button mat-raised-button color="primary" (click)="addSchedule(daySch, durationSch, timeSch)">Agregar horario</button>  
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="closeDialog()">Cerrar</button>
+  <button *ngIf="nameDoj.value.length > 3" (click)="addDojang()" mat-raised-button color="primary">Guardar</button>
+  <p style="color: firebrick; font-size: 10px; padding-left: 10px;">{{errorMsg}}</p>
+</div>

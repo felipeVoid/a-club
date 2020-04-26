@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {auth} from 'firebase';
-import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
 import {AngularFireAuth} from '@angular/fire/auth';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -12,46 +12,49 @@ import {AngularFireAuth} from '@angular/fire/auth';
 export class LoginComponent implements OnInit {
   returnUrl: string;
   user: any;
-  tiles: any;
-  breakpoint = 1;
   constructor(public afAuth: AngularFireAuth,
               private router: Router,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute, private http: HttpClient) { }
 
   ngOnInit() {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.breakpoint = (window.innerWidth <= 400) ? 1 : 6;
     if (!localStorage.getItem('data')) {
       this.login();
     } else {
-      window.location.href = '';
+      window.location.href = this.returnUrl;
     }
-  }
-  init() {
-    this.onResize(window.innerWidth);
-    this.user = JSON.parse(localStorage.getItem('data'));
-    this.tiles = [
-      {item: this.user.picture, cols: 1, rows: 1},
-      {item: this.user.email, cols: 1, rows: 1}
-    ];
   }
 
   login() {
     this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(data => {
-      localStorage.setItem('data', JSON.stringify({
-        uid: data.user.uid,
-        email: data.additionalUserInfo.profile['email'],
-        picture: data.additionalUserInfo.profile['picture'],
-        name: data.additionalUserInfo.profile['name']
-      }));
-      window.location.href = '';
+      this.afAuth.auth.currentUser.getIdToken(true).then(idToken => {
+        localStorage.setItem('data', JSON.stringify({
+          uid: data.user.uid,
+          email: data.additionalUserInfo.profile['email'],
+          picture: data.additionalUserInfo.profile['picture'],
+          name: data.additionalUserInfo.profile['name'],
+          tk: idToken
+        }));
+
+        const headers = new HttpHeaders().set('Authorization', 'Bearer ' + idToken);
+        this.http.get('https://us-central1-a-club-admin.cloudfunctions.net/app/hello', {headers})
+        .subscribe(
+          data => {
+            // console.log(data);
+            window.location.href = this.returnUrl;
+            // this.navigate();
+          }, errorHello => {
+            console.log(errorHello);
+          });
+      });
+      setTimeout(() => {
+        window.location.href = this.returnUrl;
+      }, 15000);
+      // window.location.href = '/';
+      // this.navigate();
     }).catch( error => {
       console.log(error);
     });
-  }
-
-  onResize(eventWidth) {
-    this.breakpoint = (eventWidth <= 550) ? 1 : 2;
   }
 
   navigate() {

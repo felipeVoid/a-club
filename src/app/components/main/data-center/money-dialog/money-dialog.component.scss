@@ -1,0 +1,31 @@
+.select-year{
+    width: 50%;
+}  
+.paid{
+    width: 80%;
+    height: 90px;
+}
+.register{
+    padding: 10px;
+    .register-pay{
+        font-size: 18px;
+        height: 74px;
+        background-color: #85d0dc;
+    }
+}
+.static-month-data{
+    width: 100%;
+}  
+.money-name{
+    font-weight: lighter !important;
+    color: #a1a1a1;
+    font-size: 18px !important;
+    text-align: left;
+}
+.month-list{
+    overflow: auto;
+    max-height: 200px;
+    .mat-card-title{
+        font-size: 13px !important;
+    }
+}

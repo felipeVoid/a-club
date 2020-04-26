@@ -114,7 +114,16 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field id="dojangField" >
+  <mat-form-field id="dojangField">
+    <mat-label>Dojang</mat-label>
+    <mat-select [(value)]="data.item.training_address" [disabled]="disableInput">
+      <mat-option *ngFor="let doj of dojangs" [value]="doj.name">
+        {{doj.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field id="dojangField" *ngIf="false">
     <mat-label>Dojang</mat-label>
     <input matInput [(ngModel)]="data.item.training_address" [disabled]="disableInput">
   </mat-form-field>

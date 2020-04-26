@@ -1,35 +1,176 @@
 /* You can add global styles to this file, and also import other style files */
-
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-.container{
-  padding: 40px;
+
+.mat-sidenav-content {
+  background-color: #4e004e;
 }
+
+.container {
+  padding-top: 10px;
+  display: grid;
+}
+
+.container-fix-cdk-editor {
+  padding-top: 10px;
+  display: grid;
+}
+
+.container-flex {
+  display: flex;      
+}
+
+.dis {
+  grid-template-columns: auto;
+}
+
+.dis1-2 {
+  grid-template-columns: 32.5% 64.5%;
+  grid-gap: 3%;
+}
+
+.dis2-1 {
+  grid-template-columns: 64.5% 32.5%;
+  grid-gap: 3%;
+}
+
+.dis2 {
+  grid-template-columns: 48.5% 48.5%;
+  grid-gap: 3%;
+}
+
+.dis1-3 {
+  grid-template-columns: 24.5% 72.5%;
+  grid-gap: 3%;
+}
+
+.dis3-1 {
+  grid-template-columns: 72.5% 24.5%;
+  grid-gap: 3%;
+}
+
+.dis3 {
+  grid-template-columns: 32% 32% 32%;
+  grid-gap: 4%;
+}
+
+.dis1-4 {
+  grid-template-columns: 16.5% 80.5%;
+  grid-gap: 3%;
+}
+
+.dis4-1 {
+  grid-template-columns: 80.5% 16.5%;
+  grid-gap: 3%;
+}
+
+.dis4 {
+  grid-template-columns: 24% 24% 24% 24%;
+  grid-gap: 1.333%;
+}
+
+.padding-def {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.primary-color {
+  color: #673ab7;
+}
+
+.default-color {
+  color: #cecece;
+}
+
+@media (max-width: 700px) {
+  .container-fix-cdk-editor {
+    padding-top: 20px;
+    display: block;
+  }
+
+  .mat-toolbar {
+    position: fixed;
+    z-index: 20;
+  }
+  
+  .resp-margin {
+    margin-top: 60px;
+  }
+
+  .dis1-2 {
+    grid-template-columns: auto;
+  }
+  .dis2-1 {
+    grid-template-columns: auto;
+  }
+  .dis2 {
+    grid-template-columns: auto;
+  }
+  .dis1-3 {
+    grid-template-columns: auto;
+  }
+  .dis3-1 {
+    grid-template-columns: auto;
+  }
+  .dis3 {
+    grid-template-columns: auto;
+  }
+  .dis4 {
+    grid-template-columns: 48% 48%;
+    grid-gap: 4%;
+  }
+  .padding-def {
+    padding: 0;
+  }
+}
+
+.hide-block {
+  display: none !important;
+}
+
+.full-width {
+  width: 100%;
+}
+
 .mat-form-field{
   width: 100%;
 }
+
 .align-center{
   text-align: center !important;
 }
+
 .align-left {
   text-align: left !important;
 }
+
+.align-right{
+  text-align: right !important;
+}
+
 .center-item{
   padding-top: 60px;
   margin: auto;
   width: 80%;
 }
+
+.float-right {
+  float: right;
+}
+
 .edit-on {
   background-color: #ffffff;
   color: #2e1d56;
   border: 2px solid #2e1d56 !important;
   line-height: 32px !important;
 }
+
 .title-form{
   font-size: 24px;
   margin-bottom: 15px;
   text-decoration: underline;
 }
+
 .card-login{
   text-align: center;
   padding: 0 !important;
@@ -37,19 +178,43 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     height: 60px;
   }
 }
-.mat-input-element{
-  font-size: 28px !important;
-}
+
 mat-sidenav-container{
   height: 100%;
 }
+
 .mat-form-field-infix {
   margin: 20px !important;
 }
+
 .mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content {
   right: 0;
 }
 
+.mat-input-element{
+  font-size: 28px !important;
+}
+
 .cursor-pointer {
   cursor: pointer !important;
+}
+
+.inherit-font-size {
+  font-size: inherit !important;
+}
+
+.spinner-file {
+  width: 40px !important;
+  height: 40px !important;
+  left: 18px;
+  svg {
+      width: 40px !important;
+      height: 40px !important;
+  }
+}
+
+.ck-editor-html {
+  .ck-content {
+      max-height: 300px;
+  }
 }

@@ -4,18 +4,6 @@
     <div class="login-form" *ngIf="user">
       <br>
       <div>Bienvenido <b>{{user.name}}</b>.</div>
-      <mat-grid-list [cols]="breakpoint" rowHeight="100px" (window:resize)="onResize($event.target.innerWidth)">
-        <mat-grid-tile
-          [colspan]="1"
-          [rowspan]="1">
-          <img class="img-login" alt="picture" src="{{user.picture}}">
-        </mat-grid-tile>
-        <mat-grid-tile
-          [colspan]="1"
-          [rowspan]="1">
-          <h3>{{user.email}}</h3>
-        </mat-grid-tile>
-      </mat-grid-list>
     </div>
     <button class="btn-login" *ngIf="user" (click)="navigate()" mat-raised-button color="primary">Administrar club</button>
   </mat-card>

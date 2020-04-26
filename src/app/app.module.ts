@@ -25,7 +25,12 @@ import {
   MatMenuModule,
   MatProgressBarModule,
   MatExpansionModule,
-  MatSlideToggleModule
+  MatSlideToggleModule,
+  MatTabsModule,
+  MatSnackBarModule,
+  MatProgressSpinnerModule,
+  MatDatepickerModule,
+  MatNativeDateModule
 } from '@angular/material';
 
 import {DragDropModule} from '@angular/cdk/drag-drop';
@@ -42,9 +47,20 @@ import {ChartsModule} from 'ng2-charts';
 import { DetailDialogComponent } from './components/main/data-center/detail-dialog/detail-dialog.component';
 import { NotesDialogComponent } from './components/main/notes-dialog/notes-dialog.component';
 import { AddMemberDialogComponent } from './components/main/data-center/add-member-dialog/add-member-dialog.component';
-import {AngularFireStorage} from '@angular/fire/storage';
+import { AngularFireStorage } from '@angular/fire/storage';
 import { ExamComponent } from './components/main/exam/exam.component';
 import { MoneyDialogComponent } from './components/main/data-center/money-dialog/money-dialog.component';
+import { DojangDialogComponent } from './components/main/data-center/dojang-dialog/dojang-dialog.component';
+import { NodesComponent } from './components/main/nodes/nodes.component';
+import { ArtComponent } from './components/main/art/art.component';
+
+import { HttpClientModule } from '@angular/common/http';
+import { AlertSnackBarComponent } from './components/alert-snack-bar/alert-snack-bar.component';
+import { Services } from './services/services.service';
+import { FileIconPipe } from './pipes/file-icon.pipe';
+import { LocalDataComponent } from './components/local-data/local-data.component';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [
@@ -57,7 +73,13 @@ import { MoneyDialogComponent } from './components/main/data-center/money-dialog
     NotesDialogComponent,
     AddMemberDialogComponent,
     ExamComponent,
-    MoneyDialogComponent
+    MoneyDialogComponent,
+    DojangDialogComponent,
+    NodesComponent,
+    ArtComponent,
+    AlertSnackBarComponent,
+    FileIconPipe,
+    LocalDataComponent
   ],
   imports: [
     BrowserModule,
@@ -83,20 +105,32 @@ import { MoneyDialogComponent } from './components/main/data-center/money-dialog
     MatExpansionModule,
     DragDropModule,
     MatSlideToggleModule,
+    MatTabsModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    ChartsModule
+    ChartsModule,
+    HttpClientModule,
+    CKEditorModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     AngularFireAuth,
     AngularFireStorage,
-    AuthGuard
+    AuthGuard,
+    Services,
+    LoginComponent
   ],
   entryComponents: [
     DetailDialogComponent,
     NotesDialogComponent,
     AddMemberDialogComponent,
-    MoneyDialogComponent
+    DojangDialogComponent,
+    MoneyDialogComponent,
+    AlertSnackBarComponent
   ],
   bootstrap: [AppComponent]
 })

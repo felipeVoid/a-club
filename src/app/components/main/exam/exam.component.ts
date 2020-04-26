@@ -13,7 +13,7 @@ export class ExamComponent implements OnInit {
   listB = [];
   listC = [];
   listD = [];
-  selectedItem = 'None';
+  selectedItem: any = {name: 'None'};
   user: any;
   members: any;
   membersList = [];
@@ -61,6 +61,11 @@ export class ExamComponent implements OnInit {
         this.listA = this.membersList;
         this.showProgress = false;
       });
+  }
+
+  selectCurrentMember(item) {
+    console.log(item);
+    this.selectedItem = item;
   }
 
 }

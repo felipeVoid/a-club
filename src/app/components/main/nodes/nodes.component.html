@@ -1,0 +1,277 @@
+<div class="container dis2-1 resp-margin mat-card-margin-b padding-def">
+  <div class="registered-users">
+    <mat-expansion-panel #accRegUse>
+      <mat-expansion-panel-header>
+        <mat-panel-title class="left-title">
+          <mat-icon>{{accRegUse.expanded ? 'person_outline' : 'person'}}</mat-icon>
+        </mat-panel-title>
+        <mat-panel-description>
+          Users
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="mat-expansion-panel-content">
+        <div class="container dis4-1">
+          <div *ngIf="statusSearchUsers == 0">
+            <mat-form-field>
+              <input matInput #searchInputUsers (keyup)="applyFilterUser(searchInputUsers)" placeholder="Search user by email or name">
+            </mat-form-field>
+          </div>
+
+          <div *ngIf="statusSearchUsers == 1">
+            {{initActions[statusSearchUsers].name}}
+            <mat-form-field *ngIf="false">
+              <mat-label>Search by Sync status</mat-label>
+              <mat-select>
+                <mat-option value="0">
+                  Waiting
+                </mat-option>
+                <mat-option value="1">
+                  Acepted
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div *ngIf="statusSearchUsers == 2">
+            {{initActions[statusSearchUsers].name}}
+          </div>
+          
+          <div class="container dis search-user-controls">
+            <button (click)="changeStatusSearchUsers('+')" mat-raised-button color="primary">
+              <mat-icon>arrow_drop_up</mat-icon>
+            </button>
+            
+            <button mat-raised-button color="primary">
+              <mat-icon>{{initActions[statusSearchUsers].icon}}</mat-icon>
+            </button>
+
+            <button (click)="changeStatusSearchUsers('-')" mat-raised-button color="primary">
+              <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <ng-container *ngIf="registeredUsers">
+          <mat-card *ngFor="let user of registeredUsers | keyvalue">
+            <mat-card-header>
+              <img [ngClass]="user.value.status + '-status'" mat-card-avatar src="{{user.value.picture}}">
+              <mat-card-title>{{user.value.name}}</mat-card-title>
+              <mat-card-subtitle>{{user.value.email}}</mat-card-subtitle>
+              <div class="mat-card-info container dis2">
+                <mat-icon class="mat-btn" (click)="awaitSync(user.key)" matTooltip="Request NodeNotes Sync" matTooltipPosition="above">sync</mat-icon>
+                <mat-icon class="mat-btn" *ngIf="user.value.node" (click)="selectNodeNotesReg(user.key)" matTooltip="{{user.value.modified_date ? user.value.modified_date : 'None'}}" matTooltipPosition="above">{{selectedUidReg == user.key ? 'visibility_off' : 'visibility'}}</mat-icon>                
+                <ng-container *ngIf="user.value.status == 'default'">
+                  <mat-icon class="mat-btn" (click)="aceptSync(user.key)" matTooltip="Enable AutoSync" matTooltipPosition="above">stars</mat-icon>
+                </ng-container>
+                <ng-container *ngIf="user.value.status == 'await'">
+                  <mat-icon class="mat-btn" (click)="aceptSync(user.key)" matTooltip="Acept Sync request" matTooltipPosition="above">check_circle</mat-icon>
+                  <mat-icon class="mat-btn" (click)="cancelSync(user.key)" matTooltip="Deny Sync request" matTooltipPosition="above">cancel</mat-icon>
+                </ng-container>
+                <ng-container *ngIf="user.value.status == 'ok'">
+                  <mat-icon class="mat-btn" (click)="offSync(user.key)" matTooltip="Cancel AutoSync" matTooltipPosition="above">cancel</mat-icon>
+                </ng-container>
+              </div>
+            </mat-card-header>
+            <mat-card-actions>
+              <div>Extras</div>
+              <mat-icon class="mat-btn" (click)="chatRequest(user.key)" matTooltip="Chat request" matTooltipPosition="above">question_answer</mat-icon>
+            </mat-card-actions>
+          </mat-card>
+        </ng-container>
+      </div>
+      <div class="mat-expansion-panel-actions" *ngIf="false">
+        <mat-icon>{{statusSearchUsers ?  'assignment_ind' : 'assignment'}}</mat-icon>
+        <mat-slide-toggle
+        class="toggle-card"
+        matTooltip="{{statusSearchUsers ? 'Switch to Date filter' : 'Switch to Name or Email filter'}}"
+        matTooltipPosition="above"
+        color="primary"
+        [(ngModel)]="statusSearchUsers">
+        </mat-slide-toggle>
+      </div>
+    </mat-expansion-panel>
+  </div>
+
+  <div class="shared">
+    <mat-expansion-panel #accRegShared>
+      <mat-expansion-panel-header>
+        <mat-panel-title class="left-title">
+          <mat-icon>{{accRegShared.expanded ? 'people' : 'folder_shared'}}</mat-icon>
+        </mat-panel-title>
+        <mat-panel-description>
+          Shared
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="mat-expansion-panel-content">
+        <div>
+          NodeGroups and NodePackage
+        </div>
+      </div>
+      <div class="mat-expansion-panel-actions">
+        <button class="cursor-pointer" mat-raised-button color="primary">Create new NodeGroup</button>
+      </div>
+    </mat-expansion-panel>
+  </div>
+</div>
+
+<div class="container-fix-cdk-editor dis2 padding-def">
+  <div class="mat-card-margin-b">
+    <mat-card [style.background-color]="selectedUidReg != '' ? '#ffe200' : ''">          
+      <mat-card-content>
+        <mat-form-field>
+          <input matInput #searchInputCategory (keyup)="applyFilterCategory(searchInputCategory)" placeholder="Search category">
+        </mat-form-field>
+        <mat-progress-bar *ngIf="!loadState" color="accent" mode="indeterminate"></mat-progress-bar>
+        <div class="scroll-categories">
+          <mat-accordion>
+            <mat-expansion-panel #acc [expanded]="selectedCategory == category.key" *ngFor="let category of categories | keyvalue">
+              <mat-expansion-panel-header (click)="multiSelectAllCategory(category.key, acc)">
+                <mat-panel-title class="left-title">
+                  <mat-icon>{{acc.expanded ? 'folder_open' : 'folder'}}</mat-icon>
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{category.key}}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="mat-expansion-panel-content">
+                <mat-card class="node-note" [ngClass]="checkMultiSelectNodeNoteList(note.name) > -1 || selectedNote && selectedNote.name == note.name ? 'note-active' : ''" (click)="getSelectedNodeNote(category.key, note)" *ngFor="let note of category.value.notes">
+                  <mat-card-header>
+                    <mat-icon class="mat-card-icon" mat-card-avatar>note</mat-icon>
+                    <mat-card-title>{{note.name}}</mat-card-title>
+                    <mat-card-subtitle>{{note.description}}</mat-card-subtitle>                              
+                    <mat-icon *ngIf="!multiSelectNodeNote" class="mat-card-btn">play_arrow</mat-icon>
+                    <mat-icon *ngIf="multiSelectNodeNote" class="mat-card-btn">{{checkMultiSelectNodeNoteList(note.name) > -1 ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                  </mat-card-header>
+                </mat-card>
+                <mat-card *ngIf="selectedUidReg == ''">
+                  <mat-card-header class="new-nodenote" (click)="createNodeNote(category.key)" >
+                    <mat-icon class="mat-card-icon" mat-card-avatar>note_add</mat-icon>
+                    <mat-card-title>New<span class="plus">+</span></mat-card-title>
+                    <mat-card-subtitle>Click to add new NodeNote</mat-card-subtitle>
+                  </mat-card-header>
+                </mat-card>
+              </div>
+            </mat-expansion-panel>
+        </mat-accordion>
+        </div>
+      </mat-card-content>
+      <mat-card-actions *ngIf="selectedUidReg == ''">
+        <mat-form-field appearance="outline">
+          <mat-label>Enter name for new category</mat-label>
+          <input (keyup)="checkCategory(categoryIn)" matInput class="add-category" type="text" #categoryIn>
+          <mat-icon matTooltip="Hi, click me to know me :)"
+          matTooltipPosition="above"
+          (click)="helpInfo()"
+          class="bath"
+          matSuffix>
+            bathtub
+          </mat-icon>
+          <mat-hint *ngIf="statusCategory > -1">
+            <span class="warning-hint">Warning</span>: The system will erase [ <span class="warning-hint">{{categoryIn.value}}</span> ] NodeNotes on Save.
+          </mat-hint>
+        </mat-form-field>
+        <button *ngIf="statusCategory > -3" (click)="createCategory(categoryIn)" mat-raised-button color="primary">Save</button>
+        <button *ngIf="statusCategory > -1" (click)="removeCategory(categoryIn)" mat-raised-button color="warn">
+          {{securityRemove == 1 ? 'Confirm' : 'Remove'}}
+        </button>
+        <mat-slide-toggle *ngIf="statusCategory > -3"
+            class="toggle-card"
+            matTooltip="{{multiSelectNodeNote ? 'Switch to single select' : 'Switch to multi select'}}"
+            matTooltipPosition="above"
+            color="accent"
+            [(ngModel)]="multiSelectNodeNote">
+            </mat-slide-toggle>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+  <div> 
+      <mat-card *ngIf="selectedNote">
+          <mat-card-header (click)="setEditable()"
+          [ngClass]="isEditable ? 'hide-block' : 'edit-note'"
+          #editTooltip="matTooltip"
+          matTooltip="[ctrl + e] or Click to edit"
+          matTooltipPosition="above">
+            <mat-icon mat-card-avatar class="mat-card-icon">description</mat-icon>
+            <mat-card-title>{{selectedNote.name}}</mat-card-title>              
+            <mat-card-subtitle>{{selectedNote.description}}</mat-card-subtitle>
+            <div class="mat-card-info">
+              <div>created: {{selectedNote.created_date}}</div>
+              <div>modified: {{selectedNote.modified_date}}</div>
+            </div>
+          </mat-card-header>
+          <mat-card-header [ngClass]="!isEditable ? 'hide-block' : ''">
+            <mat-icon (click)="setEditable()" mat-card-avatar class="mat-card-cancel">cancel</mat-icon>              
+            <mat-card-title>
+              <input class="inherit-font-size" #nameInput type="text" [value]="selectedNote.name">
+            </mat-card-title>
+            <mat-card-subtitle>
+              <input class="inherit-font-size" #descriptionInput type="text" [value]="selectedNote.description">
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <textarea [ngClass]="htmlOn ? 'hide-block' : ''"
+            #textInput
+            [disabled]="!isEditable"
+            class="text-selected"
+            [value]="selectedNote.text">
+              {{selectedNote.text}}
+            </textarea>
+            <ckeditor [ngClass]="htmlOn ? '' : 'hide-block'"
+            [disabled]="!isEditable"
+            class="ck-editor-html"
+            [editor]="Editor"
+            [(ngModel)]="selectedNote.text">
+            </ckeditor>
+          </mat-card-content>
+          <mat-card-content *ngIf="selectedNote.files">
+            <div class="container dis4">
+              <mat-card class="align-center" *ngFor="let file of selectedNote.files | keyvalue">
+                <mat-card-header *ngIf="file.value.url != 'none' && selectedUidReg == ''">
+                  <div class="mat-card-info">
+                    <mat-icon (click)="removeFile(file)" class="cancel-file">cancel</mat-icon>
+                  </div>
+                </mat-card-header>
+                <mat-card-content>
+                  <div matTooltip="{{file.value.name}}" matTooltipPosition="above">
+                    <a *ngIf="file.value.url != 'none' && currentFile.value.name != file.value.name" href="{{file.value.url}}" class="icontainer" target="_blank">
+                      <mat-icon class="icon-file">{{file.value.type | fileIcon}}</mat-icon>
+                    </a>
+                  </div>
+                  <mat-progress-spinner
+                      *ngIf="fileObject || currentFile.value.name == file.value.name"
+                      class="spinner-file"
+                      [color]="currentFile.value.name == file.value.name ? 'warn' : 'accent'"
+                      mode='indeterminate'>
+                  </mat-progress-spinner>
+                  <mat-icon *ngIf="!fileObject && selectedUidReg == ''" class="cursor-pointer" (click)="fileInput.click()">attachment</mat-icon>
+                  <input class="hide-block" #fileInput type="file" (change)="setFile($event, file.key)">
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </mat-card-content>
+          <mat-card-actions *ngIf="selectedUidReg == ''">
+            <button (click)="removeNodeNote(selectedNote, selectedCategory)" mat-raised-button color="warn">Remove</button>
+            <button *ngIf="nodeNotes && isEditable" (click)="setNodeNote(nameInput.value, descriptionInput.value, textInput.value)" mat-raised-button color="primary">Save</button>
+            <mat-slide-toggle
+            class="toggle-card"
+            matTooltip="{{htmlOn ? 'Switch to Simple Text' : 'Switch to HTML'}}"
+            matTooltipPosition="above"
+            color="accent"
+            [(ngModel)]="htmlOn">
+            </mat-slide-toggle>
+          </mat-card-actions>
+      </mat-card>
+
+      <mat-card *ngIf="multiSelectNodeNoteList.length > 0">
+        <mat-card-content>
+          <h2>What to do?</h2>
+          <div *ngFor="let selectedItem of multiSelectNodeNoteList">
+            <h4>{{selectedItem}}</h4>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button (click)="multiSelectNodeNoteList = []" mat-raised-button color="warn">Exit</button>
+        </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

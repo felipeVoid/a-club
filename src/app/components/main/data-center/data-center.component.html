@@ -26,7 +26,7 @@
 
             <ng-container matColumnDef="training_address">
               <th mat-header-cell *matHeaderCellDef> Dojang </th>
-              <td mat-cell *matCellDef="let element" [ngClass]="element.item.active == 'false' ? 'inactive' : ''"> {{element.item.training_address}} </td>
+              <td class="cursor-pointer" mat-cell *matCellDef="let element" (click)="openDialogEditDojang(element.item.training_address)" [ngClass]="element.item.active == 'false' ? 'inactive' : ''"> {{element.item.training_address}} </td>
             </ng-container>
 
             <ng-container matColumnDef="current_belt">
@@ -39,7 +39,7 @@
             </ng-container>
 
             <ng-container matColumnDef="money">
-              <th mat-header-cell *matHeaderCellDef>Dineros</th>
+              <th mat-header-cell *matHeaderCellDef></th>
               <td mat-cell *matCellDef="let element" [ngClass]="element.item.active == 'false' ? 'inactive' : ''">
                 <span class="mat-col-icon">
                   <mat-icon (click)="openDialogMoney(element.item, element.id)" class="money" aria-hidden="false" aria-label="icon">attach_money</mat-icon>
@@ -74,7 +74,7 @@
 
                 </ng-container>
                 <mat-icon class="add-resp" [matMenuTriggerFor]="menuResp" matTooltip="Asignar apoderado"
-                          matTooltipPosition="right">add</mat-icon>
+                          matTooltipPosition="above">add</mat-icon>
                 <mat-menu #menuResp="matMenu">
                   <div mat-menu-item *ngFor="let obj of responsables" (click)="addResp(element.id, obj.id)">
                     <span>{{obj.id}} - <b>{{ obj.name }}</b></span>
@@ -112,7 +112,7 @@
             </ng-container>
 
             <ng-container matColumnDef="money">
-              <th mat-header-cell *matHeaderCellDef>Dineros</th>
+              <th mat-header-cell *matHeaderCellDef></th>
               <td mat-cell *matCellDef="let element" [ngClass]="element.item.active == 'false' ? 'inactive' : ''">
                 <span class="mat-col-icon">
                   <mat-icon class="money" aria-hidden="false" aria-label="icon">attach_money</mat-icon>
@@ -135,9 +135,15 @@
     </mat-expansion-panel>
   </mat-accordion>
 </div>
-<button (click)="openDialogAddMember()" class="float" mat-fab color="primary">
+<button (click)="openDialogAddMember()" class="float" mat-fab color="primary"
+  matTooltip="Agregar miembro" matTooltipPosition="above">
   <mat-icon aria-hidden="false" aria-label="icon">person_add</mat-icon>
 </button>
-<button class="float-sub" mat-fab color="primary">
+<button (click)="openDialogAddDojang()" class="float2" mat-fab color="primary"
+  matTooltip="Agregar dojang" matTooltipPosition="above">
+  <mat-icon aria-hidden="false" aria-label="icon">pages</mat-icon>
+</button>
+<button class="float-sub" mat-fab color="primary"
+  matTooltip="{{tempActive ? 'Activos' : 'Inactivos'}}" matTooltipPosition="above">
   <mat-slide-toggle color="primary" (change)="changeDataSource(tempActive)" [(ngModel)]="tempActive"></mat-slide-toggle>
 </button>

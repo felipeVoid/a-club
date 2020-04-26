@@ -1,19 +1,42 @@
 <div mat-dialog-title>
-  <span>Contabilidad</span>
-  <span>-</span>
-  <span><input type="text" value="{{data.item.money.amount}}"></span>
-  <span>-</span>
-  <span><input type="text" value="{{data.item.money.exception}}"></span>
+  <div class="container dis2">
+    <div>Contabilidad</div>
+    <div class="align-right">
+      <select class="select-year" #yearDrop (change)="filterYear(yearDrop.value)">
+        <option [selected]="obj == tempListYearKey[(this.tempListYearKey.length - 1)]" *ngFor="let obj of tempListYearKey" value="{{obj}}">{{obj}}</option>
+      </select>
+    </div> 
+  </div>
+  <div class="money-name">{{data.item.name}}</div>
 </div>
 
 <div mat-dialog-content>
-  <div *ngFor="let item of data.item.money.paid_per_year | keyvalue">
-    <div><b>{{item.key}}</b></div>
-    <div *ngFor="let item2 of item.value | keyvalue">
-      {{item2.key}}:{{item2.value.amount_paid}}
-    </div>
+  <div class="container dis4 month-list" *ngIf="selectedYear">
+    <mat-card *ngFor="let item of selectedYear.item; let i = index;" class="align-center">
+      <mat-card-header>
+        <img mat-card-avatar src="assets/img/price.svg" alt="money">
+        <mat-card-title>{{monthTranslate(item.name)}}</mat-card-title>
+        <mat-card-subtitle>{{item.amount_paid ? '$' + item.amount_paid : '--'}}</mat-card-subtitle>
+      </mat-card-header>
+      <img *ngIf="item.amount_paid" class="paid" mat-card-image src="assets/img/emoji.svg" matTooltip="{{item.exception ? item.exception : ''}}" matTooltipPosition="after" alt="paid">            
+      <mat-card-content class="register" *ngIf="!item.amount_paid">
+        <button (click)="registerPaidMonth(item, i, moneyAmount.value, moneyException.value)" class="register-pay" mat-raised-button color="primary" alt="paid">Registrar</button>
+      </mat-card-content>
+      <mat-card-actions *ngIf="item.amount_paid">
+        <button (click)="cancelPaidMonth(i, item.name)" mat-button>Cancelar</button>
+      </mat-card-actions>
+    </mat-card>
   </div>
-  <div *ngIf="!data.item.money">NO DATA</div>
+  <div class="container dis2">
+    <mat-card>
+      <label>Monto mensual</label>
+      <input #moneyAmount (keyup)="saveMoneyAmount(moneyAmount.value)" class="static-month-data" type="number" min="0" max="70000" value="{{money.amount ? money.amount : 0}}">
+    </mat-card>
+    <mat-card>
+      <label>Observación</label>
+      <input #moneyException (keyup)="saveMoneyException(moneyException.value)" class="static-month-data" type="text" value="{{money.exception ? money.exception : false}}">
+    </mat-card>
+  </div> 
 </div>
 
 <div mat-dialog-actions>

@@ -1,36 +1,45 @@
 <mat-sidenav-container>
   <mat-sidenav class="align-center" #sidenav mode="over" [(opened)]="opened">
     <div class="menu-header">
-      <div><img routerLink="/" class="logo-header cursor-pointer" alt="logo" src="assets/img/logo-min.png"></div>
+      <div>
+        <!--img routerLink="/" class="logo-header cursor-pointer" alt="logo" src="assets/img/logo-min.png"-->
+        <mat-icon routerLink="/" class="logo-header-side" matBadge="Ey!" matBadgeOverlap="false" matBadgeColor="accent">description</mat-icon>
+      </div>
     </div>
-    <div class="menu-item" routerLink="/" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">people_alt</mat-icon></div>
-    <div class="menu-item" routerLink="/chart" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">pie_chart</mat-icon></div>
-    <div class="menu-item" routerLink="/exam" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">school</mat-icon></div>
+
+    <div class="menu-item" routerLink="/" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">note</mat-icon></div>
+    <div class="menu-item" routerLink="/data" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">people_alt</mat-icon></div>    
+    <div *ngIf="false" class="menu-item" routerLink="/chart" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">pie_chart</mat-icon></div>
+    <div *ngIf="false" class="menu-item" routerLink="/exam" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">school</mat-icon></div>
+    <div class="menu-item" routerLink="/art" (click)="sidenav.toggle()"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">toys</mat-icon></div>
+    
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="primary" *ngIf="user">
       <mat-toolbar-row>
         <mat-icon (click)="sidenav.toggle()" class="icon-header">menu</mat-icon>
-        <span><img routerLink="/" class="logo-header cursor-pointer" alt="logo" src="assets/img/logo-min.png"></span>
+        <span><mat-icon routerLink="/" class="logo-header" matBadge="Ey!" matBadgeOverlap="false" matBadgeColor="accent">description</mat-icon></span>
         <span class="spacer-header"></span>
 
-        <mat-icon class="icon-header" [matMenuTriggerFor]="menuNot" matBadge="1" matBadgeColor="warn">notifications</mat-icon>
-        <mat-menu #menuNot="matMenu">
-          <div mat-menu-item>
-            <mat-icon>emoji_people</mat-icon>
-            <span><b>Bienvenido </b> {{ user.name }} !</span>
+        <mat-icon class="icon-header" [ngClass]="notifications && notifications.length > 0 ? 'new-not' : ''" [matMenuTriggerFor]="menuNot" matBadge="{{notifications ? notifications.length : 0}}"  matBadgeColor="warn">notifications</mat-icon>
+        <mat-menu #menuNot="matMenu" [class]="notifications.length > 0 ? '' : 'hide-block'">
+          <ng-container *ngFor="let not of notifications">
+            <div mat-menu-item *ngIf="!not.read" (click)="readByNotification(not)">
+              <mat-icon>{{not.icon}}</mat-icon>
+              <span>{{not.name}}</span>
+              <span>[{{not.date}}]</span>
+            </div>
+          </ng-container>
+          <div mat-menu-item *ngIf="notifications.length > 0">
+            <span><button class="full-width" (click)="readAllNotification()" mat-raised-button color="primary">Read All</button></span>
           </div>
         </mat-menu>
 
         <span class="icon-header"><img [matMenuTriggerFor]="menuGmail" src="{{user.picture}}" alt="{{ user.email }}"></span>
         <mat-menu #menuGmail="matMenu">
-          <div mat-menu-item>
-            <mat-icon>person</mat-icon>
-            <span>{{ user.name }}</span>
-          </div>
-          <a mat-menu-item href="https://mail.google.com/mail/u/0/">
+          <a mat-menu-item href="https://mail.google.com/mail/u/0/" target="_blank">
             <mat-icon>email</mat-icon>
-            <span>{{ user.email }}</span>
+            <span>{{ user.name }}</span>
           </a>
           <button mat-menu-item (click)="logout()">
             <mat-icon>cancel</mat-icon>
@@ -52,3 +61,11 @@
   </mat-sidenav-content>
 </mat-sidenav-container>
 
+<div class="chats" *ngIf="chats">
+  <div [style.right]="i + 5 + 'px'" class="dialog-chat" *ngFor="let chat of chats | keyvalue; let i = index;">
+    <div class="container dis1-4">
+      <img src="{{getChatMembers(chat.value.members, 'picture')}}">
+      <p>{{getChatMembers(chat.value.members, 'name')}}</p>
+    </div>
+  </div>
+</div>
