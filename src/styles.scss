@@ -8,16 +8,20 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .container {
   padding-top: 10px;
-  display: grid;
+  display: grid !important;
 }
 
 .container-fix-cdk-editor {
   padding-top: 10px;
-  display: grid;
+  display: grid !important;
 }
 
 .container-flex {
-  display: flex;      
+  display: flex !important;
+}
+
+.inline-block {
+  display: inline-block !important;
 }
 
 .dis {
@@ -51,7 +55,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .dis3 {
   grid-template-columns: 32% 32% 32%;
-  grid-gap: 4%;
+  grid-gap: 2%;
 }
 
 .dis1-4 {
@@ -80,6 +84,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .default-color {
   color: #cecece;
+}
+
+.mat-drawer-content {
+  overflow-x: hidden !important;
 }
 
 @media (max-width: 700px) {

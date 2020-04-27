@@ -1,10 +1,12 @@
 .art-container {
     padding: 20px;
+    background-color: #dcdcdc;
+    margin-top: 56px;
+    margin-bottom: 60px;
 }
 
 .boundary-art {
-    height: 500px;
-    width: 95%;
+    height: 600px;
     overflow: auto;
     border: 1px solid #ff2c2c;
 }
@@ -22,14 +24,13 @@
 }
 
 .menu-art-zone {
-    margin: 40px;
     z-index: 9999;
-    width: 88%;
+    width: 100%;
 }
 
 .mat-accordion-edit {
     position: absolute;
-    bottom: 0;
+    top: 60px;
     left: 0;
     width: 100%;
     z-index: 9999;

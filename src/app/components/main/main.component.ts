@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {NotesDialogComponent} from './notes-dialog/notes-dialog.component';
-import {AngularFireDatabase, AngularFireObject} from '@angular/fire/database';
 import { Services } from 'src/app/services/services.service';
-import {Router, NavigationEnd, NavigationStart} from '@angular/router';
 import { AlertSnackBarComponent } from '../alert-snack-bar/alert-snack-bar.component';
+import { __core_private_testing_placeholder__ } from '@angular/core/testing';
 
 @Component({
   selector: 'app-main',
@@ -14,22 +13,18 @@ import { AlertSnackBarComponent } from '../alert-snack-bar/alert-snack-bar.compo
 })
 export class MainComponent implements OnInit {
   opened: boolean;
-  itemRef: AngularFireObject<any>;
   globalDataBase = '';
   user: any;
   notifications = [];
   tempNotifications = [];
   chats: any;
   myChats = [];
-  positionChat = 5;
-
-  tips: any;
-  routeNow = '/';
+  selectedChat = '';
+  contNewMsg = 0;
+  
   constructor(public afAuth: AngularFireAuth,
               public dialog: MatDialog,
-              private db: AngularFireDatabase,
               private services: Services,
-              private router: Router,
               private _snackBar: MatSnackBar) { }
 
   ngOnInit() {
@@ -37,6 +32,13 @@ export class MainComponent implements OnInit {
     this.globalDataBase = '/users/' + this.user.uid;
     this.getNotifications();
     this.getChats();
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEventDown(event: KeyboardEvent) {
+    if (event.key == 'Escape') {
+      this.closeChatBox();
+    }
   }
 
   logout() {
@@ -59,33 +61,84 @@ export class MainComponent implements OnInit {
             temp_list.push(member.uid);
           });
           if (temp_list.indexOf(this.user.uid) < 0) {
-            console.log(this.chats);
             delete this.chats[key];
           }
         });
 
         if (this.isEmpty(this.chats)) {
           this.chats = null;
-        } else {
-          console.log(this.chats);
-        }        
+        }      
       }
     });
+  }
+
+  setActiveChat(chat, box) {
+    this.selectedChat = chat;
+    this.setScrollBox(box);
   }
 
   getChatMembers(members, value) {
     const members_filter = members.filter(member => member.uid != this.user.uid);
     switch (value) {
       case 'picture':
+        if (members_filter.length > 1) {
+          return 'folder_shared';
+        }
         return members_filter[0].picture;
       case 'name':
-        let extra = '';
         if (members_filter.length > 1) {
-          extra = '' + (members_filter.length - 1);
+          return 'You +' + members_filter.length + ' members';
         }
-        return members_filter[0].name + extra;
+        let nameTrunc = members_filter[0].name;
+        if (nameTrunc.length > 15) {
+          nameTrunc = members_filter[0].name.substr(0, 15) + '...';
+        }
+        return nameTrunc;
       default:
         return '';
+    }
+  }
+
+  sendMessage(input, box) {
+    const newId = Date.now();
+    if (this.selectedChat && input.value != '') {
+      const dateNow = this.formatDate(new Date(Date.now()));
+
+      let read_temp = {};
+
+      this.chats[this.selectedChat].members.filter(member => {
+        read_temp[member.uid] = false;
+      });
+      read_temp[this.user.uid] = true;
+
+      const message = {
+        text: input.value,
+        user: {
+          name: this.user.name,
+          uid: this.user.uid,
+          picture: this.user.picture,
+          email: this.user.email
+        },
+        created_date: dateNow,
+        read: read_temp
+      };
+
+      this.services.setItemByKey(message, 'chat/' + this.selectedChat + '/messages/' + newId)
+      .then(() => {
+        input.value = '';
+        this.setScrollBox(box);        
+      });
+    }
+  }
+
+  closeChatBox() {
+    this.selectedChat = '';
+  }
+
+  setScrollBox(box) {
+    const scroll = document.getElementById(box);
+    if (scroll) {
+      scroll.scrollTop = scroll.scrollHeight;
     }
   }
 
@@ -129,6 +182,18 @@ export class MainComponent implements OnInit {
     return Object.keys(obj).length === 0 && obj.constructor === Object;
   }
 
+  formatDate(date) {
+    let dd = String(date.getDate()).padStart(2, '0');
+    let MM = String(date.getMonth() + 1).padStart(2, '0');
+    let yy = date.getFullYear();
+    let mm = String(date.getMinutes()).padStart(2, '0');
+  
+    date.setHours(date.getHours()); // -4 to diff time zone
+    let hh = date.getHours();
+  
+    return dd + '/' + MM + '/' + yy + ', ' + hh + ':' + mm;
+  }
+
   openDialogNotes(): void {
     const dialogRef = this.dialog.open(NotesDialogComponent, {
       width: '750px'
@@ -143,5 +208,10 @@ export class MainComponent implements OnInit {
       duration: duration * 1000,
       data: {class: type, text: textIn}
     });
+  }
+
+  sidenavToggleCloseChat(sidenav) {
+    this.closeChatBox();
+    sidenav.toggle();
   }
 }

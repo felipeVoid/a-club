@@ -56,6 +56,8 @@ export class NodesComponent implements OnInit {
     {name: 'sync_search', icon: 'sync'},
     {name: 'date_sync_search', icon: 'calendar_today'}
   ];
+
+  chats: any;
   constructor(private _snackBar: MatSnackBar,
               private services: Services,
               private storage: AngularFireStorage) { }
@@ -110,11 +112,12 @@ export class NodesComponent implements OnInit {
             this.applyFilterCategory(this.filterOnUser);
           }
           if (this.user.uid != 'HHC4o74WxucfArmrFpwKeWN7SO13') {
-            this.validateWorkGroup();
+            // this.validateWorkGroup();
           }
           
           this.getWaitingSyncList();
           this.getAceptedSyncList();
+          this.getChats();
         }
       }
     });
@@ -126,7 +129,7 @@ export class NodesComponent implements OnInit {
       if (action.payload.val()) {
         this.waitingSyncList = action.payload.val();
         this.waitingSyncList.filter(x => {
-          if (this.registeredUsers[x]) {
+          if (this.registeredUsers && this.registeredUsers[x]) {
             this.registeredUsers[x]['status'] = 'await'
           }
         });
@@ -140,7 +143,7 @@ export class NodesComponent implements OnInit {
       if (action.payload.val()) {
         this.aceptedSyncList = action.payload.val();
         this.aceptedSyncList.filter(x => {
-          if (this.registeredUsers[x]) {
+          if (this.registeredUsers && this.registeredUsers[x]) {
             this.registeredUsers[x]['status'] = 'ok'
           }          
         });
@@ -149,12 +152,14 @@ export class NodesComponent implements OnInit {
   }
 
   awaitSync(uid) {
-    const url = this.globalDataBase + '/registered_users/' + uid;
-    const regUsersTemp = this.registeredUsers;
-    for (const user in regUsersTemp) {
-      if (user == uid) {
-        this.services.updateItemByKey({sync: 'sync_await'}, url);
-        break;
+    if (this.registeredUsers) {
+      const url = this.globalDataBase + '/registered_users/' + uid;
+      const regUsersTemp = this.registeredUsers;
+      for (const user in regUsersTemp) {
+        if (user == uid) {
+          this.services.updateItemByKey({sync: 'sync_await'}, url);
+          break;
+        }
       }
     }
   }
@@ -207,15 +212,15 @@ export class NodesComponent implements OnInit {
   validateWorkGroup() {
     const workGroupUser = this.user.email
     .substring(this.user.email.indexOf('@'));
-    Object.keys(this.registeredUsers).filter(key => {      
-      const workGroupRegister = this.registeredUsers[key].email
-      .substring(this.registeredUsers[key].email.indexOf('@'));
+    Object.keys(this.fullRegisteredUsers).filter(key => {      
+      const workGroupRegister = this.fullRegisteredUsers[key].email
+      .substring(this.fullRegisteredUsers[key].email.indexOf('@'));
       if (workGroupRegister != workGroupUser) {
-        delete this.registeredUsers[key];
+        delete this.fullRegisteredUsers[key];
       }
     });
-    if (this.isEmpty(this.registeredUsers)) {
-      this.registeredUsers = null;
+    if (this.isEmpty(this.fullRegisteredUsers)) {
+      this.fullRegisteredUsers = null;
     }
   }
 
@@ -359,6 +364,7 @@ export class NodesComponent implements OnInit {
     };
 
     this.setNodeNotes(category);
+    this.selectedCategory = category;
 
     while (this.checkNodeNote(this.selectedNote.name) > -1) {
       this.selectedNote.name += this.checkNodeNote(this.selectedNote.name);
@@ -373,7 +379,7 @@ export class NodesComponent implements OnInit {
     this.services.setItemByKey(this.nodeNotes, url)
     .then(() => {
       this.openSnackBar(5, 'success', 'NodeNote created');
-      this.isEditable = true;
+      this.isEditable = false;
     }).catch(error => {
       this.openSnackBar(5, 'error', error);
     });
@@ -557,7 +563,7 @@ export class NodesComponent implements OnInit {
   }
 
   applyFilterUser(input) {
-    if (input.value.length > 0 && input.value != '') {
+    if (input.value.length > 0 && input.value != '' && this.fullRegisteredUsers) {
       this.filterOnUser.value = input.value;
       let allowedName = [];
       let allowedEmail = [];
@@ -631,7 +637,84 @@ export class NodesComponent implements OnInit {
     }
   }
 
-  chatRequest(uid) {
-    console.log(uid);
+  getChats() {
+    this.services.subscribeItemByKey('chat').subscribe(action => {      
+      if (action.payload.val()) {
+        this.chats = action.payload.val();
+
+        Object.keys(this.chats).filter(key => {
+          const temp_list = [];
+          this.chats[key].members.filter(member => {
+            temp_list.push(member.uid);
+          });
+          if (temp_list.indexOf(this.user.uid) < 0) {
+            delete this.chats[key];
+          }
+        });
+
+        if (this.isEmpty(this.chats)) {
+          this.chats = null;
+        }      
+      }
+    });
+  }
+
+  chatRequest(uidIn, userInObj) {
+    const newId = Date.now();
+    const dateNow = this.formatDate(new Date(Date.now()));
+
+    let statusChat = false;
+    
+    for (const obj in this.chats) {
+      const temp_list = [];
+      this.chats[obj].members.filter(member => {
+        temp_list.push(member.uid);
+      });
+      if (temp_list.length == 2) {
+        if (temp_list.indexOf(uidIn) > -1 && temp_list.indexOf(this.user.uid) > -1) {
+          statusChat = true;
+          break;
+        }
+      } 
+    }
+
+    if (!statusChat) {
+      const temp_obj = {
+        members: [
+          {
+            admin: false,
+            name: this.user.name,
+            uid: this.user.uid,
+            picture: this.user.picture,
+            email: this.user.email
+          },
+          {
+            admin: false,
+            name: userInObj.name,
+            uid: uidIn,
+            picture: userInObj.picture,
+            email: userInObj.email
+          }],
+        status: 'active',
+        messages: {
+          [newId]: {
+            created_date: dateNow,
+            read: {
+              [this.user.uid]: true,
+              [uidIn]: false
+            },
+            text: 'Hi!',
+            user: {
+              name: this.user.name,
+              uid: this.user.uid,
+              picture: this.user.picture,
+              email: this.user.email
+            }
+          }
+        }
+      };
+
+      this.services.setItemByKey(temp_obj, 'chat/' + newId);
+    }
   }
 }

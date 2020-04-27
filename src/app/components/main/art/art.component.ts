@@ -39,17 +39,17 @@ export class ArtComponent implements OnInit {
         this.closeOptions();
       }
 
-      if (event.ctrlKey) {
-        if (event.key == 's') {
+      if (event.shiftKey && !event.ctrlKey) {
+        if (event.key == 'S') {
           this.setArtZoneChar();
         }
-        if (event.key == 'r') {
+        if (event.key == 'R') {
           this.removeArtZoneChar();
         }
-        if (event.key == 'c') {
+        if (event.key == 'C') {
           this.copyArtZoneChar();
         }
-      } else if (this.canChangePosition && !event.ctrlKey) {
+      } else if (this.canChangePosition) {
         if (event.key == 'a') {
           this.setPositionX('-');
         }
@@ -109,6 +109,7 @@ export class ArtComponent implements OnInit {
     this.services.setItemByKey(this.artZone[this.selectedArt], 'art_zone/' + this.selectedArt)
     .then(() => {
       this.openSnackBar(5, 'success', 'ArtZone Char Saved => ' + this.selectedArt);
+      this.closeOptions();
     });
   }
 
@@ -193,6 +194,7 @@ export class ArtComponent implements OnInit {
       });
     } else {
       this.openSnackBar(5, 'error', 'ArtZone Char Name is required');
+      this.closeOptions();
     }
     
   }
@@ -201,6 +203,7 @@ export class ArtComponent implements OnInit {
     this.services.removeItemByKey('art_zone/' + this.selectedArt)
     .then(() => {
       this.openSnackBar(5, 'success', 'ArtZone Char Removed => ' + this.selectedArt);
+      this.closeOptions();
     });
   }
 
@@ -229,6 +232,7 @@ export class ArtComponent implements OnInit {
     this.services.setItemByKey(tempChar, 'art_zone/' + newName)
     .then(() => {
       this.openSnackBar(5, 'success', 'ArtZone Char Copied => ' + newName);
+      this.closeOptions();
     });
   }
 

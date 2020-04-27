@@ -72,10 +72,12 @@
                 </ng-container>
               </div>
             </mat-card-header>
-            <mat-card-actions>
-              <div>Extras</div>
-              <mat-icon class="mat-btn" (click)="chatRequest(user.key)" matTooltip="Chat request" matTooltipPosition="above">question_answer</mat-icon>
-            </mat-card-actions>
+            <mat-card-content>
+              <div class="mat-card-info container dis4">
+                <div>Extra</div>
+                <mat-icon *ngIf="chats" class="mat-btn" (click)="chatRequest(user.key, user.value)" matTooltip="Chat request" matTooltipPosition="above">question_answer</mat-icon>
+              </div>
+            </mat-card-content>
           </mat-card>
         </ng-container>
       </div>
