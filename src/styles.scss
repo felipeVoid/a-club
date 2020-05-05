@@ -14,6 +14,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .container-fix-cdk-editor {
   padding-top: 10px;
   display: grid !important;
+  margin-bottom: 60px;
 }
 
 .container-flex {
@@ -93,7 +94,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 @media (max-width: 700px) {
   .container-fix-cdk-editor {
     padding-top: 20px;
-    display: block;
+    display: block !important;
+    margin: 0;
   }
 
   .mat-toolbar {

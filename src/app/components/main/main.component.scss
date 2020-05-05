@@ -98,7 +98,6 @@ mat-sidenav {
   right: 0;
   bottom: 0;
   z-index: 100;
-  
   .dialog-chat {
     cursor: pointer;
     position: fixed;
@@ -166,16 +165,13 @@ mat-sidenav {
       max-width: 650px;
       min-width: 350px;
       position: fixed;
-      bottom: 60px;
-      .mat-card-content {
-        max-height: 450px;
-        overflow: auto;
-      }
-    }
-    @media (max-width: 700px) {
-      .chat-box {
-        top: 60px;
-        min-width: 100%;
+      bottom: 0;
+      mat-card {
+        height: 100%;
+        mat-card-content {
+          max-height: 450px;
+          overflow: auto;
+        }
       }
     }
 
@@ -199,6 +195,82 @@ mat-sidenav {
       &:hover {
           color: #f44336;
       }
+    }
   }
+}
+
+.chats-resp {
+  display: none;
+}
+
+@media (max-width: 700px) {
+
+  .chat-box {
+    height: 100% !important;
+    width: 100%;
+    mat-card {
+      width: 93% !important;
+      mat-card-content {
+        position: fixed;
+        bottom: 70px;
+        top: 50px;
+        width: 93% !important;
+      }
+      mat-card-actions {
+        width: 98%;
+        position: fixed;
+        bottom: 10px;
+      }
+    }
+  }
+
+  .dialog-chat {
+    width: 0 !important;
+    height: 0 !important;
+    border: 0 !important;
+  }
+  .chat-header {
+    display: none !important;
+  }
+  .chats-resp {
+    display: block;
+    width: 95%;
+    margin-left: 5px;
+    .full-box {
+      cursor: pointer;
+      height: 46px;
+      background-color: #ffe200;
+      border: 2px solid #673ab7;
+      padding-left: 10px;
+      padding-right: 10px;
+      margin-bottom: 5px;
+      border-radius: 20px;
+      &:hover {
+        background-color: #f3ef00;
+        border: 3px solid #673ab7;
+      }
+
+      .folder-shared {
+        border-radius: 100%;
+        border: 2px solid #673ab7;
+        padding: 1px;
+      }
+  
+      p {
+        color: #000000;
+        font-size: 18px;
+        margin: 0;
+        text-align: left;
+        margin-top: 5px;
+      }
+  
+      img {
+        width: 80%;
+        height: auto;
+        border-radius: 100%;
+        border: 2px solid #673ab7;
+        background-color: #ffffff;
+      }
+    }
   }
 }

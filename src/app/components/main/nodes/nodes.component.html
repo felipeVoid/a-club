@@ -10,46 +10,50 @@
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="mat-expansion-panel-content">
-        <div class="container dis4-1">
-          <div *ngIf="statusSearchUsers == 0">
-            <mat-form-field>
-              <input matInput #searchInputUsers (keyup)="applyFilterUser(searchInputUsers)" placeholder="Search user by email or name">
-            </mat-form-field>
-          </div>
-
-          <div *ngIf="statusSearchUsers == 1">
-            {{initActions[statusSearchUsers].name}}
-            <mat-form-field *ngIf="false">
-              <mat-label>Search by Sync status</mat-label>
-              <mat-select>
-                <mat-option value="0">
-                  Waiting
-                </mat-option>
-                <mat-option value="1">
-                  Acepted
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div *ngIf="statusSearchUsers == 2">
-            {{initActions[statusSearchUsers].name}}
-          </div>
-          
-          <div class="container dis search-user-controls">
-            <button (click)="changeStatusSearchUsers('+')" mat-raised-button color="primary">
-              <mat-icon>arrow_drop_up</mat-icon>
-            </button>
-            
-            <button mat-raised-button color="primary">
-              <mat-icon>{{initActions[statusSearchUsers].icon}}</mat-icon>
-            </button>
-
-            <button (click)="changeStatusSearchUsers('-')" mat-raised-button color="primary">
-              <mat-icon>arrow_drop_down</mat-icon>
-            </button>
-          </div>
-        </div>
+        <mat-card>
+          <mat-card-content>
+            <div class="container dis4-1">
+              <div *ngIf="statusSearchUsers == 0">
+                <mat-form-field>
+                  <input matInput #searchInputUsers (keyup)="applyFilterUser(searchInputUsers)" placeholder="Search user by email or name">
+                </mat-form-field>
+              </div>
+    
+              <div *ngIf="statusSearchUsers == 1">
+                {{initActions[statusSearchUsers].name}}
+                <mat-form-field *ngIf="false">
+                  <mat-label>Search by Sync status</mat-label>
+                  <mat-select>
+                    <mat-option value="0">
+                      Waiting
+                    </mat-option>
+                    <mat-option value="1">
+                      Acepted
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+    
+              <div *ngIf="statusSearchUsers == 2">
+                {{initActions[statusSearchUsers].name}}
+              </div>
+              
+              <div class="container dis search-user-controls">
+                <button (click)="changeStatusSearchUsers('+')" mat-raised-button color="primary">
+                  <mat-icon>arrow_drop_up</mat-icon>
+                </button>
+                
+                <button (click)="showAllUsers()" mat-raised-button color="primary">
+                  <mat-icon>{{initActions[statusSearchUsers].icon}}</mat-icon>
+                </button>
+    
+                <button (click)="changeStatusSearchUsers('-')" mat-raised-button color="primary">
+                  <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
 
         <ng-container *ngIf="registeredUsers">
           <mat-card *ngFor="let user of registeredUsers | keyvalue">
@@ -57,25 +61,25 @@
               <img [ngClass]="user.value.status + '-status'" mat-card-avatar src="{{user.value.picture}}">
               <mat-card-title>{{user.value.name}}</mat-card-title>
               <mat-card-subtitle>{{user.value.email}}</mat-card-subtitle>
-              <div class="mat-card-info container dis2">
+              <div class="mat-card-info container dis3">
                 <mat-icon class="mat-btn" (click)="awaitSync(user.key)" matTooltip="Request NodeNotes Sync" matTooltipPosition="above">sync</mat-icon>
                 <mat-icon class="mat-btn" *ngIf="user.value.node" (click)="selectNodeNotesReg(user.key)" matTooltip="{{user.value.modified_date ? user.value.modified_date : 'None'}}" matTooltipPosition="above">{{selectedUidReg == user.key ? 'visibility_off' : 'visibility'}}</mat-icon>                
                 <ng-container *ngIf="user.value.status == 'default'">
                   <mat-icon class="mat-btn" (click)="aceptSync(user.key)" matTooltip="Enable AutoSync" matTooltipPosition="above">stars</mat-icon>
                 </ng-container>
+                <ng-container *ngIf="user.value.status == 'ok'">
+                  <mat-icon class="mat-btn" (click)="offSync(user.key)" matTooltip="Cancel AutoSync" matTooltipPosition="above">cancel</mat-icon>
+                </ng-container>
+                <mat-icon class="mat-btn" (click)="chatRequest(user.key, user.value)" matTooltip="Chat request" matTooltipPosition="above">question_answer</mat-icon>
                 <ng-container *ngIf="user.value.status == 'await'">
                   <mat-icon class="mat-btn" (click)="aceptSync(user.key)" matTooltip="Acept Sync request" matTooltipPosition="above">check_circle</mat-icon>
                   <mat-icon class="mat-btn" (click)="cancelSync(user.key)" matTooltip="Deny Sync request" matTooltipPosition="above">cancel</mat-icon>
                 </ng-container>
-                <ng-container *ngIf="user.value.status == 'ok'">
-                  <mat-icon class="mat-btn" (click)="offSync(user.key)" matTooltip="Cancel AutoSync" matTooltipPosition="above">cancel</mat-icon>
-                </ng-container>
               </div>
             </mat-card-header>
-            <mat-card-content>
+            <mat-card-content *ngIf="false">
               <div class="mat-card-info container dis4">
                 <div>Extra</div>
-                <mat-icon *ngIf="chats" class="mat-btn" (click)="chatRequest(user.key, user.value)" matTooltip="Chat request" matTooltipPosition="above">question_answer</mat-icon>
               </div>
             </mat-card-content>
           </mat-card>
@@ -136,10 +140,10 @@
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <div class="mat-expansion-panel-content">
-                <mat-card class="node-note" [ngClass]="checkMultiSelectNodeNoteList(note.name) > -1 || selectedNote && selectedNote.name == note.name ? 'note-active' : ''" (click)="getSelectedNodeNote(category.key, note)" *ngFor="let note of category.value.notes">
+                <mat-card class="node-note" *ngFor="let note of category.value.notes" [ngClass]="checkMultiSelectNodeNoteList(note.name) > -1 || selectedNote && selectedNote.name == note.name ? 'note-active' : ''" (click)="getSelectedNodeNote(category.key, note)">
                   <mat-card-header>
                     <mat-icon class="mat-card-icon" mat-card-avatar>note</mat-icon>
-                    <mat-card-title>{{note.name}}</mat-card-title>
+                    <mat-card-title><span class="note-ref">{{note.name}}</span></mat-card-title>
                     <mat-card-subtitle>{{note.description}}</mat-card-subtitle>                              
                     <mat-icon *ngIf="!multiSelectNodeNote" class="mat-card-btn">play_arrow</mat-icon>
                     <mat-icon *ngIf="multiSelectNodeNote" class="mat-card-btn">{{checkMultiSelectNodeNoteList(note.name) > -1 ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
@@ -191,10 +195,10 @@
           <mat-card-header (click)="setEditable()"
           [ngClass]="isEditable ? 'hide-block' : 'edit-note'"
           #editTooltip="matTooltip"
-          matTooltip="[ctrl + e] or Click to edit"
+          matTooltip="Click title to edit [shift + e]"
           matTooltipPosition="above">
             <mat-icon mat-card-avatar class="mat-card-icon">description</mat-icon>
-            <mat-card-title>{{selectedNote.name}}</mat-card-title>              
+            <mat-card-title #titleScroll>{{selectedNote.name}}</mat-card-title>              
             <mat-card-subtitle>{{selectedNote.description}}</mat-card-subtitle>
             <div class="mat-card-info">
               <div>created: {{selectedNote.created_date}}</div>
@@ -246,7 +250,31 @@
                       mode='indeterminate'>
                   </mat-progress-spinner>
                   <mat-icon *ngIf="!fileObject && selectedUidReg == ''" class="cursor-pointer" (click)="fileInput.click()">attachment</mat-icon>
-                  <input class="hide-block" #fileInput type="file" (change)="setFile($event, file.key)">
+                  <input class="hide-block" #fileInput type="file" (change)="setFile($event, file.key, 'cloud')">
+                </mat-card-content>
+              </mat-card>
+            </div>
+            <div class="local-container" *ngIf="false">
+              <mat-card class="local-card" *ngFor="let file of selectedNote.local_files | keyvalue">
+                <mat-card-header *ngIf="file.value.name != 'none'">
+                  <div class="mat-card-info">
+                    <mat-icon (click)="removeLocalFile(file.key)" class="cancel-file">cancel</mat-icon>
+                  </div>
+                </mat-card-header>
+                <mat-card-content>
+                  <div matTooltip="{{file.key == 0 ? 'New Local File' : file.value.name}}" matTooltipPosition="above">
+                    <a *ngIf="file.value.url != 'none' && currentFile.value.name != file.value.name" href="{{file.value.url}}" class="icontainer" target="_blank">
+                      <mat-icon class="icon-file">{{file.value.type | fileIcon}}</mat-icon>
+                    </a>
+                  </div>
+                  <mat-progress-spinner
+                      *ngIf="fileObject || currentFile.value.name == file.value.name"
+                      class="spinner-file"
+                      [color]="currentFile.value.name == file.value.name ? 'warn' : 'accent'"
+                      mode='indeterminate'>
+                  </mat-progress-spinner>
+                  <mat-icon [style.color]="file.key == 0 ? 'green' : '#5a5a5a'" class="cursor-pointer" (click)="localFileInput.click()">attachment</mat-icon>
+                  <input class="hide-block" #localFileInput type="file" (change)="setFile($event, file.key, 'local')">
                 </mat-card-content>
               </mat-card>
             </div>

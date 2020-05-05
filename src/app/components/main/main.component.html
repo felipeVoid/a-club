@@ -12,7 +12,17 @@
     <div *ngIf="false" class="menu-item" routerLink="/chart" (click)="sidenavToggleCloseChat(sidenav)"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">pie_chart</mat-icon></div>
     <div *ngIf="false" class="menu-item" routerLink="/exam" (click)="sidenavToggleCloseChat(sidenav)"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">school</mat-icon></div>
     <div class="menu-item" routerLink="/art" (click)="sidenavToggleCloseChat(sidenav)"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">toys</mat-icon></div>
-    
+
+    <div class="chats-resp" *ngIf="chats">
+      <div *ngFor="let chat of chats | keyvalue; let i = index;"
+      class="full-box">
+        <div class="container dis1-4" (click)="setActiveChat(chat.key, 'messageBox' + i)">
+          <img src="{{getChatMembers(chat.value.members, 'picture')}}" *ngIf="getChatMembers(chat.value.members, 'picture') != 'folder_shared'">
+          <mat-icon class="folder-shared" *ngIf="getChatMembers(chat.value.members, 'picture') == 'folder_shared'">folder_shared</mat-icon>
+          <p>{{getChatMembers(chat.value.members, 'name')}}</p>
+        </div>
+      </div>
+    </div>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="primary" *ngIf="user">
@@ -66,7 +76,7 @@
   [style.right]="((i*45)+5) + 'px'"
   [style.z-index]="50 - i"
   class="dialog-chat">
-    <div class="container dis1-4" (click)="setActiveChat(chat.key, 'messageBox' + i)">
+    <div class="container dis1-4 chat-header" (click)="setActiveChat(chat.key, 'messageBox' + i)">
       <img src="{{getChatMembers(chat.value.members, 'picture')}}" *ngIf="getChatMembers(chat.value.members, 'picture') != 'folder_shared'">
       <mat-icon class="folder-shared" *ngIf="getChatMembers(chat.value.members, 'picture') == 'folder_shared'">folder_shared</mat-icon>
       <p>{{getChatMembers(chat.value.members, 'name')}}</p>
@@ -91,9 +101,9 @@
         </mat-card-content>
         <mat-card-actions class="container dis4-1">
           <div class="send-text">
-            <textarea (keydown.enter)="sendMessage(textSend, 'messageBox' + i)" #textSend placeholder="Write message"></textarea>
+            <textarea [(ngModel)]="textSendActive" [id]="'text' + i" (keydown.enter)="sendMessage(textSend, 'messageBox' + i, 'text' + i)" #textSend placeholder="Write message"></textarea>
           </div>
-          <button (click)="sendMessage(textSend, 'messageBox' + i)" mat-raised-button color="accent">
+          <button (click)="sendMessage(textSend, 'messageBox' + i, 'text' + i)" mat-raised-button color="accent">
             <mat-icon>send</mat-icon>
           </button>
         </mat-card-actions>

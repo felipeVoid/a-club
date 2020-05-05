@@ -60,6 +60,20 @@
     }
 }
 
+.local-container {
+    overflow-x: auto;
+    width: 100%;
+    .local-card {
+        text-align: center !important;
+        display: inline-block;
+        margin-right: 5px;
+        border: 1px solid;
+        width: 100px;
+        float: none;
+        height: 100px;
+    }
+}
+
 .add-category {
     font-size: 20px;
     height: 28px;

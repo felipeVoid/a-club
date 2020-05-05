@@ -13,6 +13,7 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 })
 export class NodesComponent implements OnInit {
   @ViewChild('editTooltip', { static: false }) editTooltip: MatTooltip;
+  @ViewChild('titleScroll', { static: false }) titleScroll: ElementRef;
 
   globalDataBase = '';
   user: any;
@@ -36,8 +37,8 @@ export class NodesComponent implements OnInit {
   selectedNote: any;
   selectedCategory = '';
   fileObject: any;
-  files = [];
   currentFile = {key: '', value: {name: ''}};
+  isSelectedLocalFile = false;
 
   isEditable = false;
   
@@ -84,13 +85,12 @@ export class NodesComponent implements OnInit {
       this.multiSelectNodeNoteList = [];
       this.selectedCategory = null;
     }
+    if (event.shiftKey) {
+      this.multiSelectNodeNote = true;
+    }
     if (this.selectedNote) {
-      if (event.key == 'e' && event.ctrlKey) {
+      if (event.shiftKey && event.key == 'E') {
         this.setEditable();
-      }
-    } else {
-      if (event.shiftKey) {
-        this.multiSelectNodeNote = true;
       }
     }
   }
@@ -106,10 +106,9 @@ export class NodesComponent implements OnInit {
         });
         if (!this.isEmpty(temp_users)) {
           this.fullRegisteredUsers = temp_users;
-          // this.registeredUsers = temp_users;
 
           if (this.filterOnUser.value != '') {
-            this.applyFilterCategory(this.filterOnUser);
+            this.applyFilterUser(this.filterOnUser);
           }
           if (this.user.uid != 'HHC4o74WxucfArmrFpwKeWN7SO13') {
             // this.validateWorkGroup();
@@ -246,17 +245,40 @@ export class NodesComponent implements OnInit {
 
   createCategory(category) {  
     if (category.value != '' && category.value.length > 0) {
+      this.nodeNotes = [];
+      this.nodeNotesNames = [];
       const dateNow = this.formatDate(new Date(Date.now()));
+
+      this.selectedNote = {
+        name: 'New NodeNote',
+        created_date: dateNow,
+        modified_date: dateNow,
+        description: 'Short description',
+        text: 'Sample text.',
+        html_on: false,
+        files: {
+          file1: {url: 'none'},
+          file2: {url: 'none'},
+          file3: {url: 'none'},
+          file4: {url: 'none'}
+        },
+        local_files: {0: {name: 'none'}}
+      };
+
       const temp_category = {
         created_date: dateNow,
-        modified_date: dateNow
+        modified_date: dateNow,
+        notes: [this.selectedNote]
       };
+      
       this.services.setItemByKey(temp_category, this.globalDataBase + '/node/' + category.value)
       .then(() => {
         this.openSnackBar(5, 'success', 'NodeNote category created');
-        this.securityRemove = 0;
-        this.selectedNote = null;
+        this.securityRemove = 0;        
+
         this.selectedCategory = category.value;
+        this.setNodeNotes(this.selectedCategory);
+        
         category.value = '';
       }).catch(error => {
         this.openSnackBar(5, 'error', error);
@@ -322,9 +344,23 @@ export class NodesComponent implements OnInit {
       }
 
       this.setNodeNotes(category);
-
-      if (this.editTooltip) {
-        this.editTooltip.show();
+      
+      if (this.titleScroll) {
+        if (this.titleScroll.nativeElement) {
+          this.titleScroll.nativeElement.scrollIntoView();
+          if (this.editTooltip) {
+            this.editTooltip.show();
+          }
+        }
+      } else {
+        setTimeout(() => {
+          if (this.titleScroll.nativeElement) {
+            this.titleScroll.nativeElement.scrollIntoView();
+            if (this.editTooltip) {
+              this.editTooltip.show();
+            }
+          }
+        }, 500);
       }
     }
   }
@@ -360,11 +396,11 @@ export class NodesComponent implements OnInit {
         file2: {url: 'none'},
         file3: {url: 'none'},
         file4: {url: 'none'}
-      }
+      },
+      local_files: {0: {name: 'none'}}
     };
 
     this.setNodeNotes(category);
-    this.selectedCategory = category;
 
     while (this.checkNodeNote(this.selectedNote.name) > -1) {
       this.selectedNote.name += this.checkNodeNote(this.selectedNote.name);
@@ -430,6 +466,17 @@ export class NodesComponent implements OnInit {
     });
   }
 
+  getNodeNoteId(note, category) {
+    let newstr = note.replace(/[\W_]+/g, "");
+    let newerstr = newstr.replace( /\s+/, "");
+    let id = newerstr;
+    newstr = category.replace(/[\W_]+/g," ");
+    newerstr = newstr.replace(/\s+/, "");
+    id += newerstr;
+    console.log(id);
+    return id;
+  }
+
   addFile(fileNode) {
     if (this.fileObject && this.selectedNote) {
       const file = this.fileObject.target.files[0];
@@ -445,7 +492,7 @@ export class NodesComponent implements OnInit {
           const obj = {
             date: dateNow,
             name: file_name,
-            type: file_name.split('.')[1],
+            type: file_name.split('.')[file_name.split('.').length - 1],
             url: data
           };
 
@@ -468,16 +515,64 @@ export class NodesComponent implements OnInit {
     }
   }
 
-  setFile(event, node) {
-    try {
+  addLocalFile(node) {
+    //Chrome: fakepath, Try other brwosers.
+    if (this.fileObject && this.selectedNote) {
+      if (node == '0') {
+        node = Date.now();
+      }
+
+      console.log(this.fileObject.target.files);
+
+      const file = this.fileObject.target.files[0];
+      const file_name = this.fileObject.target.files[0].name;
+      const url = this.globalDataBase + '/node/' + this.selectedCategory + '/notes';
+      
+      const dateNow = this.formatDate(new Date(Date.now()));
+      
+      const obj = {
+        date: dateNow,
+        name: file_name,
+        type: file_name.split('.')[file_name.split('.').length - 1],
+        url: file
+      };
+
+      this.nodeNotes.filter(x => {
+        if (x.name == this.selectedNote.name) {
+          x.local_files[node] = obj;
+          x.modified_date = dateNow;
+          this.selectedNote = x;
+        }
+      });
+
+      this.services.setItemByKey(this.nodeNotes, url).then(() => {
+        this.openSnackBar(5, 'success', 'Local File added to NodeNote: ' + file_name);
+        this.fileObject = null;
+      }).catch(error => {
+        this.openSnackBar(5, 'error', error);
+      });
+    }
+  }
+
+  setFile(event, node, fileType) {
+    try {      
       if (event.target.files && event.target.files[0]) {
         const reader = new FileReader();
         reader.onload = e => {
-          // console.log(e);
+          console.log(e);
         };
         reader.readAsDataURL(event.target.files[0]);
         this.fileObject = event;
-        this.addFile(node);
+        switch (fileType) {
+          case 'local':
+            console.log(event.target.files[0]);
+            console.log(event.target.files[0].path);
+            // this.addLocalFile(node);
+            break;
+          case 'cloud': 
+            this.addFile(node);
+            break;
+        }
       }  
     } catch (e) {
       console.log(e);
@@ -514,6 +609,20 @@ export class NodesComponent implements OnInit {
     }  
   }
 
+  removeLocalFile(file) {
+    const url = this.globalDataBase + '/node/' + this.selectedCategory + '/notes/local_files/' + file;
+    this.services.removeItemByKey(url).then(() => {
+      this.openSnackBar(5, 'success', 'Local File removed from NodeNote: ' + file);
+      this.currentFile = {key: '', value: {name: ''}};
+      Object.keys(this.selectedNote.local_files).filter(key => {
+        delete this.selectedNote.local_files[file];
+      })
+    }).catch(error => {
+      this.openSnackBar(5, 'error', error);
+      this.currentFile = {key: '', value: {name: ''}};
+    });
+  }
+
   setEditable() {
     this.isEditable = !this.isEditable;
   }
@@ -536,6 +645,15 @@ export class NodesComponent implements OnInit {
 
   checkMultiSelectNodeNoteList(name) {
     return this.multiSelectNodeNoteList.indexOf(name);
+  }
+
+  scrollToNodeNote() {
+    const scroll = document.getElementsByClassName('note-active')[0]
+    .getElementsByClassName('note-ref')[0];
+    if (scroll) {
+      console.log(scroll);
+      scroll.scrollTop = scroll.scrollHeight;
+    }
   }
 
   applyFilterCategory(input) {
@@ -591,6 +709,10 @@ export class NodesComponent implements OnInit {
     }
   }
 
+  showAllUsers() {
+    this.registeredUsers = this.fullRegisteredUsers;
+  }
+
   formatDate(date) {
     let dd = String(date.getDate()).padStart(2, '0');
     let MM = String(date.getMonth() + 1).padStart(2, '0');
@@ -615,7 +737,7 @@ export class NodesComponent implements OnInit {
   }
 
   helpInfo() {
-    console.log('Help!');
+    // console.log('Help!');
   }
 
   changeStatusSearchUsers(action) {
@@ -716,5 +838,24 @@ export class NodesComponent implements OnInit {
 
       this.services.setItemByKey(temp_obj, 'chat/' + newId);
     }
+  }
+
+  readTextFile(file) {
+      var rawFile = new XMLHttpRequest();
+      rawFile.open("GET", file, false);
+      rawFile.onreadystatechange = function ()
+      {
+        console.log(rawFile);
+          if(rawFile.readyState === 4)
+          {
+              if(rawFile.status === 200 || rawFile.status == 0)
+              {
+                  //var allText = rawFile.responseText;
+                  //alert(allText);
+                  //console.log(rawFile);
+              }
+          }
+      }
+      rawFile.send(null);
   }
 }

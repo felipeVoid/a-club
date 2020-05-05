@@ -158,7 +158,8 @@ export class ArtComponent implements OnInit {
         },
         content: {
           text: '',
-          image: 'assets/img/emoji.svg'
+          image: 'assets/img/emoji.svg',
+          edit: false // uid del usuario que esta editando, validar cambios al guardar, que no se borren
         },
         options: {
           width: '200px',

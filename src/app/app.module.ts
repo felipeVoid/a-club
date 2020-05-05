@@ -62,6 +62,11 @@ import { LocalDataComponent } from './components/local-data/local-data.component
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/storage';
+import 'firebase/database';
+
 @NgModule({
   declarations: [
     AppComponent,

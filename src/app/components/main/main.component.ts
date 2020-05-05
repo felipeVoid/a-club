@@ -21,6 +21,9 @@ export class MainComponent implements OnInit {
   myChats = [];
   selectedChat = '';
   contNewMsg = 0;
+
+  textSendActive = '';
+  currentBox = '';
   
   constructor(public afAuth: AngularFireAuth,
               public dialog: MatDialog,
@@ -30,6 +33,11 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem('data'));
     this.globalDataBase = '/users/' + this.user.uid;
+    this.services.getItemByKey(this.globalDataBase + '/registered_users').once('value', action => {
+      if (!action.val()) {
+        this.logout();
+      }
+    });
     this.getNotifications();
     this.getChats();
   }
@@ -67,14 +75,16 @@ export class MainComponent implements OnInit {
 
         if (this.isEmpty(this.chats)) {
           this.chats = null;
-        }      
+        }
       }
     });
   }
 
   setActiveChat(chat, box) {
-    this.selectedChat = chat;
-    this.setScrollBox(box);
+    if (chat) {
+      this.selectedChat = chat;
+      this.setScrollBox(box);
+    }
   }
 
   getChatMembers(members, value) {
@@ -99,7 +109,8 @@ export class MainComponent implements OnInit {
     }
   }
 
-  sendMessage(input, box) {
+  sendMessage(input, box, textarea) {
+    this.currentBox = box;
     const newId = Date.now();
     if (this.selectedChat && input.value != '') {
       const dateNow = this.formatDate(new Date(Date.now()));
@@ -125,8 +136,10 @@ export class MainComponent implements OnInit {
 
       this.services.setItemByKey(message, 'chat/' + this.selectedChat + '/messages/' + newId)
       .then(() => {
+        this.setScrollBox(box);
         input.value = '';
-        this.setScrollBox(box);        
+        this.textSendActive = ''
+        document.getElementById(textarea).focus();
       });
     }
   }
@@ -136,9 +149,11 @@ export class MainComponent implements OnInit {
   }
 
   setScrollBox(box) {
-    const scroll = document.getElementById(box);
-    if (scroll) {
-      scroll.scrollTop = scroll.scrollHeight;
+    if (box != '') {
+      const scroll = document.getElementById(box);
+      if (scroll) {
+        scroll.scrollTop = scroll.scrollHeight;
+      }
     }
   }
 
