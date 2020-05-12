@@ -4,8 +4,7 @@ import {MatDialog, MatSnackBar} from '@angular/material';
 import {NotesDialogComponent} from './notes-dialog/notes-dialog.component';
 import { Services } from 'src/app/services/services.service';
 import { AlertSnackBarComponent } from '../alert-snack-bar/alert-snack-bar.component';
-import { __core_private_testing_placeholder__ } from '@angular/core/testing';
-
+import { DomSanitizer } from '@angular/platform-browser';
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -18,28 +17,32 @@ export class MainComponent implements OnInit {
   notifications = [];
   tempNotifications = [];
   chats: any;
-  myChats = [];
+  chatOn = false;
   selectedChat = '';
   contNewMsg = 0;
 
   textSendActive = '';
   currentBox = '';
-  
+
+  statusSharedLink = '';
+  displayMembers = false;
   constructor(public afAuth: AngularFireAuth,
               public dialog: MatDialog,
               private services: Services,
-              private _snackBar: MatSnackBar) { }
+              private _snackBar: MatSnackBar,
+              private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem('data'));
     this.globalDataBase = '/users/' + this.user.uid;
-    this.services.getItemByKey(this.globalDataBase + '/registered_users').once('value', action => {
-      if (!action.val()) {
-        this.logout();
+    this.services.subscribeItemByKey(this.globalDataBase + '/chat_on').subscribe(action => {
+      if (action.payload.val()) {
+        this.getChats();
+      } else {
+        this.chats = null;
       }
     });
     this.getNotifications();
-    this.getChats();
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -76,13 +79,17 @@ export class MainComponent implements OnInit {
         if (this.isEmpty(this.chats)) {
           this.chats = null;
         }
+      } else {
+        this.chats = null;
       }
     });
   }
 
   setActiveChat(chat, box) {
+    this.displayMembers = false;
     if (chat) {
       this.selectedChat = chat;
+      this.showLink(chat);
       this.setScrollBox(box);
     }
   }
@@ -104,6 +111,8 @@ export class MainComponent implements OnInit {
           nameTrunc = members_filter[0].name.substr(0, 15) + '...';
         }
         return nameTrunc;
+      case 'object':
+        return members_filter;
       default:
         return '';
     }
@@ -142,6 +151,25 @@ export class MainComponent implements OnInit {
         document.getElementById(textarea).focus();
       });
     }
+  }
+
+  removeChat(uid) {
+    this.services.removeItemByKey('chat/' + uid);
+  }
+
+  setChats() {
+    this.chatOn = !this.chatOn;
+    this.services.setItemByKey(this.chatOn, this.globalDataBase + '/chat_on');
+  }
+
+  showLink(key) {
+    this.statusSharedLink = '';
+    this.services.getItemByKey('shared_links/' + key)
+    .once('value', action => {
+      if (action.val()) {
+        this.statusSharedLink = key;
+      }
+    });
   }
 
   closeChatBox() {
@@ -228,5 +256,9 @@ export class MainComponent implements OnInit {
   sidenavToggleCloseChat(sidenav) {
     this.closeChatBox();
     sidenav.toggle();
+  }
+
+  sanitize(url: string){
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 }

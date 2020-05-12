@@ -5,6 +5,7 @@ import { Services } from 'src/app/services/services.service';
 import { AngularFireStorage } from '@angular/fire/storage';
 
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-nodes',
@@ -17,10 +18,13 @@ export class NodesComponent implements OnInit {
 
   globalDataBase = '';
   user: any;
+  isAdmin = false;
   loadState = false;
 
   registeredUsers: any;
   fullRegisteredUsers: any;
+  countUsers = 0;
+
   waitingSyncList: any;
   aceptedSyncList: any;
   selectedUidReg = '';
@@ -51,6 +55,9 @@ export class NodesComponent implements OnInit {
   multiSelectNodeNote = false;
   multiSelectNodeNoteList = [];
 
+  multiSelectUser = false;
+  multiSelectUserList = [];
+
   statusSearchUsers = 0;
   initActions = [
     {name: 'email_name_search', icon: 'people'},
@@ -59,39 +66,78 @@ export class NodesComponent implements OnInit {
   ];
 
   chats: any;
+
+  sharedLinks: any;
+  sharedLinksMembers: any;
+  countLinks = 0;
+  mySharedLinks: any;
+  myStorageSize = 0;
+  totalStorageInAccount = 0;
+
   constructor(private _snackBar: MatSnackBar,
               private services: Services,
-              private storage: AngularFireStorage) { }
+              private storage: AngularFireStorage,
+              private sanitizer: DomSanitizer) { }
 
-  ngOnInit() {
+  ngOnInit() {    
     this.user = JSON.parse(localStorage.getItem('data'));
     this.globalDataBase = '/users/' + this.user.uid;
-    this.getCategories();
+    this.resetMultiSelectUserList();
+
+    this.getMaxSizeStorage();
     this.getRegisteredUsers();
+    this.getMySharedLinks();
   }
 
   @HostListener('document:keyup', ['$event'])
   handleKeyboardEventUp(event: KeyboardEvent) {
     if (!event.shiftKey) {
       this.multiSelectNodeNote = false;
+      this.multiSelectUser = false;
     }
   }
   
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEventDown(event: KeyboardEvent) {
     if (event.key == 'Escape') {
+      this.isAdmin = false;
+      this.selectedUidReg = '';
+      this.categories = this.fullCategories;
       this.selectedNote = null;
+      this.selectedCategory = null;
+
       this.multiSelectNodeNote = false;
       this.multiSelectNodeNoteList = [];
-      this.selectedCategory = null;
+      this.multiSelectUser = false;
+      this.resetMultiSelectUserList();
     }
     if (event.shiftKey) {
       this.multiSelectNodeNote = true;
+      this.multiSelectUser = true;
     }
     if (this.selectedNote) {
       if (event.shiftKey && event.key == 'E') {
         this.setEditable();
       }
+    }
+  }
+
+  getMaxSizeStorage() {
+    const url = this.globalDataBase + '/storage_size';
+    if (this.user.uid != 'HHC4o74WxucfArmrFpwKeWN7SO13') {
+      this.services.subscribeItemByKey(url).subscribe(action => {
+        if (action.payload.val()) {
+          this.myStorageSize = action.payload.val();
+        } else {
+          this.services.setItemByKey(100, url).then(() => {
+            this.myStorageSize = 100;
+          });
+        }
+        this.getCategories();
+      }); 
+    } else {
+      this.myStorageSize = 5000;
+      this.getCategories();
     }
   }
 
@@ -111,8 +157,10 @@ export class NodesComponent implements OnInit {
             this.applyFilterUser(this.filterOnUser);
           }
           if (this.user.uid != 'HHC4o74WxucfArmrFpwKeWN7SO13') {
-            // this.validateWorkGroup();
+            this.validateWorkGroup();
           }
+
+          this.countUsers = Object.keys(this.fullRegisteredUsers).length;
           
           this.getWaitingSyncList();
           this.getAceptedSyncList();
@@ -194,18 +242,45 @@ export class NodesComponent implements OnInit {
     this.registeredUsers[uid]['status'] = 'default'
   }
 
-  selectNodeNotesReg(uid) {
+  selectNodeNotesReg(uid, type) {
     this.selectedNote = null;
     this.multiSelectNodeNote = false;
+    this.isAdmin = false;
     if (this.selectedUidReg == '') {
       this.selectedUidReg = uid;
-      if (this.registeredUsers[uid]['node']) {
-        this.categories = this.registeredUsers[uid]['node'];
+
+      switch(type) {
+        case 'shared':
+          if (this.sharedLinks[uid]['generic']) {
+            this.categories = this.sharedLinks[uid]['generic'];
+          }
+          break;
+        case 'sync':
+          if (this.registeredUsers[uid]['node']) {
+            this.categories = this.registeredUsers[uid]['node'];
+          }
+          break;
+      }
+    } else if (this.selectedUidReg != uid && this.selectedUidReg != '') {
+      this.selectedUidReg = uid;
+
+      switch(type) {
+        case 'shared':
+          if (this.sharedLinks[uid]['generic']) {
+            this.categories = this.sharedLinks[uid]['generic'];
+          }
+          break;
+        case 'sync':
+          if (this.registeredUsers[uid]['node']) {
+            this.categories = this.registeredUsers[uid]['node'];
+          }
+          break;
       }
     } else {
       this.selectedUidReg = '';
       this.categories = this.fullCategories;
     }
+    this.isAdmin = this.isSharedLinkAdmin(uid);
   }
 
   validateWorkGroup() {
@@ -226,6 +301,7 @@ export class NodesComponent implements OnInit {
   getCategories() {
     this.services.subscribeItemByKey(this.globalDataBase + '/node').subscribe(action => {
       if (action.payload.val()) {
+        this.totalStorageInAccount = 0;
         this.categories = action.payload.val();
 
         if (this.filterOnCateogry.value != '') {
@@ -234,6 +310,19 @@ export class NodesComponent implements OnInit {
 
         this.fullCategories = action.payload.val();
 
+        Object.keys(this.fullCategories).filter(catKey => {
+          if (this.fullCategories[catKey].notes) {
+            this.fullCategories[catKey].notes.filter(note => {
+              Object.keys(note.files).filter(fileKey => {
+                if (note.files[fileKey].size) {
+                  this.totalStorageInAccount += parseInt(note.files[fileKey].size);
+                }
+              });
+            });
+          }
+        });
+        this.totalStorageInAccount = parseFloat((this.totalStorageInAccount/1000000).toFixed(2));
+
         if (this.selectedCategory != '') {
           this.setNodeNotes(this.selectedCategory);
         }
@@ -241,6 +330,15 @@ export class NodesComponent implements OnInit {
       this.statusCategory = -2;
       this.loadState = true;
     });
+  }
+
+  checkIfStorageLeft() {
+    if (this.myStorageSize < this.totalStorageInAccount) {
+      this.openSnackBar(5, 'error', 'No Storage left, you can remove some files...');
+      return false;
+    } else {
+      return true;
+    }
   }
 
   createCategory(category) {  
@@ -261,8 +359,7 @@ export class NodesComponent implements OnInit {
           file2: {url: 'none'},
           file3: {url: 'none'},
           file4: {url: 'none'}
-        },
-        local_files: {0: {name: 'none'}}
+        }
       };
 
       const temp_category = {
@@ -381,7 +478,23 @@ export class NodesComponent implements OnInit {
 
   createNodeNote(category) {
     this.multiSelectNodeNoteList = [];
-    const url = this.globalDataBase + '/node/' + category + '/notes';
+
+    let url = this.globalDataBase + '/node/' + category + '/notes';
+    if (this.isAdmin) {
+      url = 'shared_links/' + this.selectedUidReg + '/generic/node/notes';
+      this.nodeNotes = this.categories.node.notes;
+      this.nodeNotes.filter(note => {
+        if (this.selectedNote) {
+          if (this.selectedNote.name == note.name) {
+            this.selectedNote = note;
+          }
+        }
+        this.nodeNotesNames.push(note.name)
+      });
+    } else {
+      this.setNodeNotes(category);
+    }
+
     const dateNow = this.formatDate(new Date(Date.now()));
 
     this.selectedNote = {
@@ -396,11 +509,8 @@ export class NodesComponent implements OnInit {
         file2: {url: 'none'},
         file3: {url: 'none'},
         file4: {url: 'none'}
-      },
-      local_files: {0: {name: 'none'}}
+      }
     };
-
-    this.setNodeNotes(category);
 
     while (this.checkNodeNote(this.selectedNote.name) > -1) {
       this.selectedNote.name += this.checkNodeNote(this.selectedNote.name);
@@ -423,7 +533,20 @@ export class NodesComponent implements OnInit {
 
   setNodeNote(name, description, text) {
     if (name != '' && name.length > 0) {
-      const url = this.globalDataBase + '/node/' + this.selectedCategory + '/notes';
+      let url = this.globalDataBase + '/node/' + this.selectedCategory + '/notes';
+      if (this.isAdmin) {
+        url = 'shared_links/' + this.selectedUidReg + '/generic/node/notes';
+        this.nodeNotes = this.categories.node.notes;
+        this.nodeNotes.filter(note => {
+          if (this.selectedNote) {
+            if (this.selectedNote.name == note.name) {
+              this.selectedNote = note;
+            }
+          }
+          this.nodeNotesNames.push(note.name)
+        });
+      }
+
       const dateNow = this.formatDate(new Date(Date.now()));
 
       if (this.selectedNote.name != name && this.checkNodeNote(name) > -1) {
@@ -454,13 +577,32 @@ export class NodesComponent implements OnInit {
   }
 
   removeNodeNote(note, category) {
-    const url = this.globalDataBase + '/node/' + category + '/notes';
-    this.nodeNotes = this.nodeNotes.filter(x => x.name != note.name);
+    let url = this.globalDataBase + '/node/' + category + '/notes';
+    
+    if (this.isAdmin) {
+      url = 'shared_links/' + this.selectedUidReg + '/generic/node/notes';
+      this.nodeNotes = this.categories.node.notes;
+    } else {
+      this.nodeNotes = this.nodeNotes.filter(x => {
+        if (x.name == note.name) {
+          Object.keys(note.files).filter(file => {
+            const temp = {
+              key: file,
+              value: note.files[file]
+            };
+            // setTimeout(() => {this.removeFile(temp);}, 1000);
+          });
+        }
+        return x.name != note.name;
+      });
+    }
+    
     this.services.setItemByKey(this.nodeNotes, url)
     .then(() => {
       this.openSnackBar(5, 'success', 'NodeNote removed: ' + note.name);
       this.isEditable = false;
       this.selectedNote = null;
+      
     }).catch(error => {
       this.openSnackBar(5, 'error', error);
     });
@@ -481,6 +623,7 @@ export class NodesComponent implements OnInit {
     if (this.fileObject && this.selectedNote) {
       const file = this.fileObject.target.files[0];
       const file_name = this.fileObject.target.files[0].name;
+      const file_size = this.fileObject.target.files[0].size;
       const url = this.globalDataBase + '/node/' + this.selectedCategory + '/notes';
       const storageUrl = url + '/' + this.selectedNote.name + '/' + fileNode + '/' + file_name;
       const dateNow = this.formatDate(new Date(Date.now()));
@@ -493,7 +636,8 @@ export class NodesComponent implements OnInit {
             date: dateNow,
             name: file_name,
             type: file_name.split('.')[file_name.split('.').length - 1],
-            url: data
+            url: data,
+            size: file_size
           };
 
           this.nodeNotes.filter(x => {
@@ -515,62 +659,24 @@ export class NodesComponent implements OnInit {
     }
   }
 
-  addLocalFile(node) {
-    //Chrome: fakepath, Try other brwosers.
-    if (this.fileObject && this.selectedNote) {
-      if (node == '0') {
-        node = Date.now();
-      }
-
-      console.log(this.fileObject.target.files);
-
-      const file = this.fileObject.target.files[0];
-      const file_name = this.fileObject.target.files[0].name;
-      const url = this.globalDataBase + '/node/' + this.selectedCategory + '/notes';
-      
-      const dateNow = this.formatDate(new Date(Date.now()));
-      
-      const obj = {
-        date: dateNow,
-        name: file_name,
-        type: file_name.split('.')[file_name.split('.').length - 1],
-        url: file
-      };
-
-      this.nodeNotes.filter(x => {
-        if (x.name == this.selectedNote.name) {
-          x.local_files[node] = obj;
-          x.modified_date = dateNow;
-          this.selectedNote = x;
-        }
-      });
-
-      this.services.setItemByKey(this.nodeNotes, url).then(() => {
-        this.openSnackBar(5, 'success', 'Local File added to NodeNote: ' + file_name);
-        this.fileObject = null;
-      }).catch(error => {
-        this.openSnackBar(5, 'error', error);
-      });
-    }
-  }
-
   setFile(event, node, fileType) {
     try {      
       if (event.target.files && event.target.files[0]) {
         const reader = new FileReader();
         reader.onload = e => {
-          console.log(e);
+          // console.log(e);
         };
-        reader.readAsDataURL(event.target.files[0]);
+        const sizeFileInput = parseFloat((parseInt(event.target.files[0].size)/1000000).toFixed(2));
+        this.totalStorageInAccount += sizeFileInput;
         this.fileObject = event;
         switch (fileType) {
-          case 'local':
-            console.log(event.target.files[0]);
-            console.log(event.target.files[0].path);
-            // this.addLocalFile(node);
-            break;
-          case 'cloud': 
-            this.addFile(node);
+          case 'cloud':
+            if (this.checkIfStorageLeft()) {
+              this.addFile(node);
+            } else {
+              this.fileObject = null;
+              this.totalStorageInAccount -= sizeFileInput;
+            }
             break;
         }
       }  
@@ -609,18 +715,308 @@ export class NodesComponent implements OnInit {
     }  
   }
 
-  removeLocalFile(file) {
-    const url = this.globalDataBase + '/node/' + this.selectedCategory + '/notes/local_files/' + file;
-    this.services.removeItemByKey(url).then(() => {
-      this.openSnackBar(5, 'success', 'Local File removed from NodeNote: ' + file);
-      this.currentFile = {key: '', value: {name: ''}};
-      Object.keys(this.selectedNote.local_files).filter(key => {
-        delete this.selectedNote.local_files[file];
-      })
-    }).catch(error => {
-      this.openSnackBar(5, 'error', error);
-      this.currentFile = {key: '', value: {name: ''}};
+  changeStatusSearchUsers(action) {
+    switch(action) {
+      case '-':
+        if (this.statusSearchUsers == 0) {
+          this.statusSearchUsers = this.initActions.length - 1;
+        } else {
+          this.statusSearchUsers--;
+        }
+        break;
+      case '+':
+        if (this.statusSearchUsers == this.initActions.length - 1) {
+          this.statusSearchUsers = 0;
+        } else {
+          this.statusSearchUsers++;
+        }
+        break;
+    }
+  }
+
+  getChats() {
+    this.services.subscribeItemByKey('chat').subscribe(action => {      
+      if (action.payload.val()) {
+        this.chats = action.payload.val();
+
+        Object.keys(this.chats).filter(key => {
+          const temp_list = [];
+          this.chats[key].members.filter(member => {
+            temp_list.push(member.uid);
+          });
+          if (temp_list.indexOf(this.user.uid) < 0) {
+            delete this.chats[key];
+          }
+        });
+
+        if (this.isEmpty(this.chats)) {
+          this.chats = null;
+        }      
+      }
     });
+  }
+
+  chatRequest(uidIn, userInObj) {
+    const dateNow = this.formatDate(new Date(Date.now()));
+    const newId = this.generateUid();
+
+    let statusChat = false;
+    
+    for (const obj in this.chats) {
+      const temp_list = [];
+      this.chats[obj].members.filter(member => {
+        temp_list.push(member.uid);
+      });
+      if (temp_list.length == 2) {
+        if (temp_list.indexOf(uidIn) > -1 && temp_list.indexOf(this.user.uid) > -1) {
+          statusChat = true;
+          break;
+        }
+      } 
+    }
+
+    if (!statusChat) {
+      const temp_obj = {
+        members: [
+          {
+            name: this.user.name,
+            uid: this.user.uid,
+            picture: this.user.picture,
+            email: this.user.email
+          },
+          {
+            name: userInObj.name,
+            uid: uidIn,
+            picture: userInObj.picture,
+            email: userInObj.email
+          }],
+        status: 'active',
+        type: 'lock',
+        messages: {
+          [Date.now()]: {
+            created_date: dateNow,
+            read: {
+              [this.user.uid]: true
+            },
+            text: 'Hi!',
+            user: {
+              name: this.user.name,
+              uid: this.user.uid,
+              picture: this.user.picture,
+              email: this.user.email
+            }
+          }
+        }
+      };
+
+      this.services.setItemByKey(temp_obj, 'chat/' + newId);
+    }
+  }
+
+  getSharedLinks() {
+    this.services.subscribeItemByKey('shared_links')
+    .subscribe(action => {
+      if (action.payload.val()) {
+        this.countLinks = 0;
+        this.sharedLinks = action.payload.val();
+
+        Object.keys(this.sharedLinks).filter(key => {
+          if (this.sharedLinks[key].members) {
+            if (this.sharedLinks[key].members.filter(member => member.uid == this.user.uid).length <= 0) {
+              delete this.sharedLinks[key];
+            }
+          }
+        });
+
+        if (this.isEmpty(this.sharedLinks)) {
+          this.sharedLinks = null;
+        } else {
+          this.countLinks = Object.keys(this.sharedLinks).length;
+        }
+      } else {
+        this.countLinks = 0;
+        this.sharedLinks = null;
+        this.categories = this.fullCategories;
+        this.selectedUidReg = '';
+        this.selectedNote = null;
+      }
+    });
+  }
+
+  getMySharedLinks() {
+    const url = this.globalDataBase + '/shared_links';
+    this.services.subscribeItemByKey(url).subscribe(action => {
+      if (action.payload.val()) {
+        this.mySharedLinks = action.payload.val();
+      } else {
+        this.mySharedLinks = { none: 'none'}
+      }
+      this.getSharedLinks();
+    });
+  }
+
+  isSharedLinkAdmin(key) {
+    return this.mySharedLinks[key];
+  }
+
+  canAddNodeNotesShared(key) {
+    let final = false;
+    if (this.multiSelectNodeNoteList.length > 0) {
+      if (this.sharedLinks[key].type == 'public' && this.isSharedLinkAdmin(key)) {
+        final = true;
+      } else if (this.sharedLinks[key].type == 'lock') {
+        final = true;
+      }
+    }
+    return final;
+  }
+
+  shareNodeNotes() {
+    const dateNow = this.formatDate(new Date(Date.now()));
+    const selectedNodeNotes = [];
+    Object.keys(this.fullCategories).filter(key => {
+      this.fullCategories[key].notes.filter(note => {
+        if (this.multiSelectNodeNoteList.indexOf(note.name) > -1) {
+          selectedNodeNotes.push(this.fullCategories[key].notes.filter(temp => temp.name == note.name)[0]);
+        }
+      });
+    });
+    
+    const uidLink = this.generateUid();
+    const sharedLink = {
+      active: true,
+      type: 'public',
+      date: dateNow,
+      generic: {
+        node: {
+          notes: selectedNodeNotes
+        }
+      }
+    };
+
+    const url = this.globalDataBase + '/shared_links/' + uidLink;
+    this.services.setItemByKey(true, url).then(() => {
+      this.services.setItemByKey(sharedLink, 'shared_links/' + uidLink);
+    });
+  }
+
+  generateNodeGroup() {
+    const dateNow = this.formatDate(new Date(Date.now()));
+    const uidLink = this.generateUid();
+    const selectedMembers = [];
+
+    Object.keys(this.registeredUsers).filter(key => {
+      if (this.checkMultiSelectUserList(key) > -1) {
+        const temp_obj = {
+          name: this.registeredUsers[key].name,
+          uid: key,
+          picture: this.registeredUsers[key].picture,
+          email: this.registeredUsers[key].email
+        };
+        selectedMembers.push(temp_obj);
+      }
+    });
+
+    selectedMembers.push({
+      name: this.user.name,
+      uid: this.user.uid,
+      picture: this.user.picture,
+      email: this.user.email
+    });
+
+    const newChat = {
+      members: selectedMembers,
+      status: 'active',
+      type: 'lock',
+      messages: {
+        [Date.now()]: {
+          created_date: dateNow,
+          read: {
+            [this.user.uid]: true
+          },
+          text: 'Hi NodeGroup!',
+          user: {
+            name: this.user.name,
+            uid: this.user.uid,
+            picture: this.user.picture,
+            email: this.user.email
+          }
+        }
+      }
+    };
+
+    this.services.setItemByKey(newChat, 'chat/' + uidLink);
+
+    
+    const selectedNodeNotes = [];
+    Object.keys(this.fullCategories).filter(key => {
+      this.fullCategories[key].notes.filter(note => {
+        if (this.multiSelectNodeNoteList.indexOf(note.name) > -1) {
+          selectedNodeNotes.push(this.fullCategories[key].notes.filter(temp => temp.name == note.name)[0]);
+        }
+      });
+    });
+    
+    const newSharedLink = {
+      active: true,
+      date: dateNow,
+      type: 'lock',
+      generic: {
+        node: {
+          notes: selectedNodeNotes
+        }
+      },
+      members: selectedMembers
+    };
+    
+    const url = this.globalDataBase + '/shared_links/' + uidLink;
+    this.services.setItemByKey(true, url).then(() => {
+      this.services.setItemByKey(newSharedLink, 'shared_links/' + uidLink);
+    });
+  }
+
+  removeSharedLink(key) {
+    const url = this.globalDataBase + '/shared_links/' + key;
+    this.services.removeItemByKey('shared_links/' + key).then(() => {
+      this.services.removeItemByKey(url);
+    });
+    this.services.removeItemByKey('chat/' + key);
+  }
+
+  addSelectedNotesShared(uid) {
+    const selectedNodeNotes = [];
+    Object.keys(this.fullCategories).filter(key => {
+      this.fullCategories[key].notes.filter(note => {
+        if (this.multiSelectNodeNoteList.indexOf(note.name) > -1) {
+          selectedNodeNotes.push(this.fullCategories[key].notes.filter(temp => temp.name == note.name)[0]);
+        }
+      });
+    });
+
+    if (this.sharedLinks[uid].generic) {
+      selectedNodeNotes.filter(note => {
+        if (this.sharedLinks[uid].generic.node.notes.filter(inner => inner.name == note.name) <= 0) {
+          this.sharedLinks[uid].generic.node.notes.push(note);
+        }
+      });
+      this.services.setItemByKey(this.sharedLinks[uid].generic.node.notes, 'shared_links/' + uid + '/generic/node/notes').then(() => {
+        this.openSnackBar(5, 'success', 'NodeNotes updated: ' + uid);
+      });
+    } else {
+      this.services.setItemByKey(selectedNodeNotes, 'shared_links/' + uid + '/generic/node/notes').then(() => {
+        this.openSnackBar(5, 'success', 'NodeNotes updated: ' + uid);
+      });
+    }
+  }
+
+  addNodeGroupMember(uid) {
+    if (this.multiSelectUser) {
+      if (this.checkMultiSelectUserList(uid) > -1) {
+        this.multiSelectUserList = this.multiSelectUserList.filter(item => item != uid);
+      } else {
+        this.multiSelectUserList.push(uid);
+      }
+    }
   }
 
   setEditable() {
@@ -645,6 +1041,21 @@ export class NodesComponent implements OnInit {
 
   checkMultiSelectNodeNoteList(name) {
     return this.multiSelectNodeNoteList.indexOf(name);
+  }
+
+  checkMultiSelectUserList(name) {
+    return this.multiSelectUserList.indexOf(name);
+  }
+
+  resetMultiSelectUserList() {
+    this.multiSelectUserList = [];
+    this.multiSelectUserList.push({
+      admin: true,
+      name: this.user.name,
+      uid: this.user.uid,
+      picture: this.user.picture,
+      email: this.user.email
+    });
   }
 
   scrollToNodeNote() {
@@ -740,122 +1151,13 @@ export class NodesComponent implements OnInit {
     // console.log('Help!');
   }
 
-  changeStatusSearchUsers(action) {
-    switch(action) {
-      case '-':
-        if (this.statusSearchUsers == 0) {
-          this.statusSearchUsers = this.initActions.length - 1;
-        } else {
-          this.statusSearchUsers--;
-        }
-        break;
-      case '+':
-        if (this.statusSearchUsers == this.initActions.length - 1) {
-          this.statusSearchUsers = 0;
-        } else {
-          this.statusSearchUsers++;
-        }
-        break;
-    }
+  sanitize(url: string){
+    return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
-  getChats() {
-    this.services.subscribeItemByKey('chat').subscribe(action => {      
-      if (action.payload.val()) {
-        this.chats = action.payload.val();
-
-        Object.keys(this.chats).filter(key => {
-          const temp_list = [];
-          this.chats[key].members.filter(member => {
-            temp_list.push(member.uid);
-          });
-          if (temp_list.indexOf(this.user.uid) < 0) {
-            delete this.chats[key];
-          }
-        });
-
-        if (this.isEmpty(this.chats)) {
-          this.chats = null;
-        }      
-      }
-    });
-  }
-
-  chatRequest(uidIn, userInObj) {
-    const newId = Date.now();
-    const dateNow = this.formatDate(new Date(Date.now()));
-
-    let statusChat = false;
-    
-    for (const obj in this.chats) {
-      const temp_list = [];
-      this.chats[obj].members.filter(member => {
-        temp_list.push(member.uid);
-      });
-      if (temp_list.length == 2) {
-        if (temp_list.indexOf(uidIn) > -1 && temp_list.indexOf(this.user.uid) > -1) {
-          statusChat = true;
-          break;
-        }
-      } 
-    }
-
-    if (!statusChat) {
-      const temp_obj = {
-        members: [
-          {
-            admin: false,
-            name: this.user.name,
-            uid: this.user.uid,
-            picture: this.user.picture,
-            email: this.user.email
-          },
-          {
-            admin: false,
-            name: userInObj.name,
-            uid: uidIn,
-            picture: userInObj.picture,
-            email: userInObj.email
-          }],
-        status: 'active',
-        messages: {
-          [newId]: {
-            created_date: dateNow,
-            read: {
-              [this.user.uid]: true,
-              [uidIn]: false
-            },
-            text: 'Hi!',
-            user: {
-              name: this.user.name,
-              uid: this.user.uid,
-              picture: this.user.picture,
-              email: this.user.email
-            }
-          }
-        }
-      };
-
-      this.services.setItemByKey(temp_obj, 'chat/' + newId);
-    }
-  }
-
-  readTextFile(file) {
-      var rawFile = new XMLHttpRequest();
-      rawFile.open("GET", file, false);
-      rawFile.onreadystatechange = function ()
-      {
-        console.log(rawFile);
-          if(rawFile.readyState === 4)
-          {
-              if(rawFile.status === 200 || rawFile.status == 0)
-              {
-                  //var allText = rawFile.responseText;
-                  //alert(allText);
-                  //console.log(rawFile);
-              }
-          }
-      }
-      rawFile.send(null);
+  generateUid() {
+    const ran = Math.floor((Math.random() + 4) * 3);
+    const uidLink = this.user.uid.substring(ran, ran + 4) + Date.now() + this.user.uid.substring(7, ran - 4);
+    return uidLink;
   }
 }

@@ -31,6 +31,7 @@
         <span><mat-icon routerLink="/" class="logo-header" matBadge="Ey!" matBadgeOverlap="false" matBadgeColor="accent">description</mat-icon></span>
         <span class="spacer-header"></span>
 
+        <mat-icon class="icon-header" (click)="setChats()">{{chatOn ? 'chat_bubble_outline' : 'chat_bubble'}}</mat-icon>
         <mat-icon class="icon-header" [ngClass]="notifications && notifications.length > 0 ? 'new-not' : ''" [matMenuTriggerFor]="menuNot" matBadge="{{notifications ? notifications.length : 0}}"  matBadgeColor="warn">notifications</mat-icon>
         <mat-menu #menuNot="matMenu" [class]="notifications.length > 0 ? '' : 'hide-block'">
           <ng-container *ngFor="let not of notifications">
@@ -77,16 +78,20 @@
   [style.z-index]="50 - i"
   class="dialog-chat">
     <div class="container dis1-4 chat-header" (click)="setActiveChat(chat.key, 'messageBox' + i)">
-      <img src="{{getChatMembers(chat.value.members, 'picture')}}" *ngIf="getChatMembers(chat.value.members, 'picture') != 'folder_shared'">
+      <img class="pic-folder" src="{{getChatMembers(chat.value.members, 'picture')}}" *ngIf="getChatMembers(chat.value.members, 'picture') != 'folder_shared'">
       <mat-icon class="folder-shared" *ngIf="getChatMembers(chat.value.members, 'picture') == 'folder_shared'">folder_shared</mat-icon>
       <p>{{getChatMembers(chat.value.members, 'name')}}</p>
     </div>
     <div class="chat-box" [style.right]="'0px'" [ngClass]="selectedChat == chat.key ? 'active' : ''">
       <mat-card>
         <mat-card-header>
+          <mat-icon class="mat-card-icon" *ngIf="chat.value.members.length == 2" (click)="removeChat(chat.key)" mat-card-avatar>delete_sweep</mat-icon>
+          <mat-icon (click)="displayMembers = !displayMembers" [style.color]="displayMembers ? '#673ab7' : ''" *ngIf="statusSharedLink != ''" class="mat-card-icon" mat-card-avatar>people</mat-icon>
+          <mat-card-title *ngIf="statusSharedLink != ''"><a [href]="sanitize('https://a-club-admin.firebaseapp.com/shared-link?key=' + chat.key)" target="_blank">{{statusSharedLink.substr(0, 15) + '...'}}</a></mat-card-title>
+          <mat-card-subtitle *ngIf="statusSharedLink != ''"><a [href]="sanitize('https://wa.me/?text=https://a-club-admin.firebaseapp.com/shared-link?key=' + statusSharedLink)" data-action="share/whatsapp/share" target="_blank">Share on Whatsapp</a></mat-card-subtitle> 
           <mat-icon (click)="closeChatBox()" class="mat-card-cancel">cancel</mat-icon>
         </mat-card-header>
-        <mat-card-content [id]="'messageBox' + i" *ngIf="chat.value.messages">
+        <mat-card-content [id]="'messageBox' + i" *ngIf="chat.value.messages && !displayMembers">
           <div *ngFor="let msg of chat.value.messages | keyvalue" class="msgs">
             <span>
               <img src="{{msg.value.user.picture}}">
@@ -98,6 +103,15 @@
               {{msg.value.text}}
             </span>
           </div>
+        </mat-card-content>
+        <mat-card-content *ngIf="displayMembers">
+          <mat-card class="members" *ngFor="let user of getChatMembers(chat.value.members, 'object')">
+            <mat-card-header>
+              <img mat-card-avatar src="{{user.picture}}">
+              <mat-card-title>{{user.name}}</mat-card-title>
+              <mat-card-subtitle>{{user.email}}</mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
         </mat-card-content>
         <mat-card-actions class="container dis4-1">
           <div class="send-text">

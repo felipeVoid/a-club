@@ -1,1 +1,81 @@
-<p>local-data works!</p>
+<div class="container-fix-cdk-editor dis2 padding-def">
+    <div class="mat-card-margin-b">
+      <mat-card [style.background-color]="selectedUidReg != '' ? '#ffe200' : ''">
+        <div *ngIf="statusText == 'login'">
+            <a href="/login">{{statusText}}.- -- (x_o)p</a>
+        </div>
+        <div *ngIf="statusText == '404'">
+            <h3>{{statusText}}.- -- (x_o)p</h3>
+        </div>
+        <mat-card-content>
+          <mat-progress-bar *ngIf="!loadState" color="accent" mode="indeterminate"></mat-progress-bar>
+          <div class="scroll-categories">
+            <mat-accordion>
+              <mat-expansion-panel #acc [expanded]="selectedCategory == category.key" *ngFor="let category of generic | keyvalue">
+                <mat-expansion-panel-header>
+                  <mat-panel-title class="left-title">
+                    <mat-icon>{{acc.expanded ? 'folder_open' : 'folder'}}</mat-icon>
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    {{category.key}}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <div class="mat-expansion-panel-content">
+                  <mat-card class="node-note" *ngFor="let note of category.value.notes" [ngClass]="selectedNote && selectedNote.name == note.name ? 'note-active' : ''" (click)="getSelectedNodeNote(category.key, note, acc)">
+                    <mat-card-header>
+                      <mat-icon class="mat-card-icon" mat-card-avatar>note</mat-icon>
+                      <mat-card-title><span class="note-ref">{{note.name}}</span></mat-card-title>
+                      <mat-card-subtitle>{{note.description}}</mat-card-subtitle>                              
+                      <mat-icon class="mat-card-btn">play_arrow</mat-icon>
+                    </mat-card-header>
+                  </mat-card>
+                </div>
+              </mat-expansion-panel>
+          </mat-accordion>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div> 
+        <mat-card *ngIf="selectedNote">
+            <mat-card-header class="edit-note">
+              <mat-icon mat-card-avatar class="mat-card-icon">description</mat-icon>
+              <mat-card-title #titleScroll>{{selectedNote.name}}</mat-card-title>              
+              <mat-card-subtitle>{{selectedNote.description}}</mat-card-subtitle>
+              <div class="mat-card-info">
+                <div>created: {{selectedNote.created_date}}</div>
+                <div>modified: {{selectedNote.modified_date}}</div>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              <textarea [ngClass]="htmlOn ? 'hide-block' : ''"
+              #textInput
+              [disabled]="true"
+              class="text-selected"
+              [value]="selectedNote.text">
+                {{selectedNote.text}}
+              </textarea>
+              <ckeditor [ngClass]="htmlOn ? '' : 'hide-block'"
+              [disabled]="true"
+              class="ck-editor-html"
+              [editor]="Editor"
+              [(ngModel)]="selectedNote.text">
+              </ckeditor>
+            </mat-card-content>
+            <mat-card-content *ngIf="selectedNote.files">
+              <div class="container dis4">
+                <mat-card class="align-center" *ngFor="let file of selectedNote.files | keyvalue">
+                  
+                  <mat-card-content>
+                    <div matTooltip="{{file.value.name}}" matTooltipPosition="above">
+                      <a *ngIf="file.value.url != 'none'" href="{{file.value.url}}" class="icontainer" target="_blank">
+                        <mat-icon class="icon-file">{{file.value.type | fileIcon}}</mat-icon>
+                      </a>
+                    </div>                    
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

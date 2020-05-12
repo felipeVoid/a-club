@@ -74,6 +74,21 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   grid-gap: 1.333%;
 }
 
+.dis3-1-1 {
+  grid-template-columns: 64% 16% 16%;
+  grid-gap: 2%;
+}
+
+.dis3-1-1-1 {
+  grid-template-columns: 62% 8% 8% 8%;
+  grid-gap: 1.33333%;
+}
+
+.dis3r4 {
+  grid-template-columns: 56% 10% 10% 10% 10%;
+  grid-gap: 1%;
+}
+
 .padding-def {
   padding-left: 20px;
   padding-right: 20px;
@@ -89,6 +104,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .mat-drawer-content {
   overflow-x: hidden !important;
+}
+
+.mat-content {
+  height: 100%;
+  align-items: center;
 }
 
 @media (max-width: 700px) {
@@ -184,7 +204,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .card-login{
   text-align: center;
   padding: 0 !important;
-  img{
+  .logo-unoff{
     height: 60px;
   }
 }

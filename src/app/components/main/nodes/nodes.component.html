@@ -3,7 +3,7 @@
     <mat-expansion-panel #accRegUse>
       <mat-expansion-panel-header>
         <mat-panel-title class="left-title">
-          <mat-icon>{{accRegUse.expanded ? 'person_outline' : 'person'}}</mat-icon>
+          <mat-icon matBadge="{{countUsers}}" matBadgeColor="primary">{{accRegUse.expanded ? 'person_outline' : 'person'}}</mat-icon>
         </mat-panel-title>
         <mat-panel-description>
           Users
@@ -56,14 +56,14 @@
         </mat-card>
 
         <ng-container *ngIf="registeredUsers">
-          <mat-card *ngFor="let user of registeredUsers | keyvalue">
+          <mat-card *ngFor="let user of registeredUsers | keyvalue" (click)="addNodeGroupMember(user.key)" class="node-note" [ngClass]="checkMultiSelectUserList(user.key) > -1 ? 'note-active' : ''">
             <mat-card-header>
               <img [ngClass]="user.value.status + '-status'" mat-card-avatar src="{{user.value.picture}}">
               <mat-card-title>{{user.value.name}}</mat-card-title>
               <mat-card-subtitle>{{user.value.email}}</mat-card-subtitle>
-              <div class="mat-card-info container dis3">
+              <div class="mat-card-info container dis3" *ngIf="!multiSelectUser">
                 <mat-icon class="mat-btn" (click)="awaitSync(user.key)" matTooltip="Request NodeNotes Sync" matTooltipPosition="above">sync</mat-icon>
-                <mat-icon class="mat-btn" *ngIf="user.value.node" (click)="selectNodeNotesReg(user.key)" matTooltip="{{user.value.modified_date ? user.value.modified_date : 'None'}}" matTooltipPosition="above">{{selectedUidReg == user.key ? 'visibility_off' : 'visibility'}}</mat-icon>                
+                <mat-icon class="mat-btn" *ngIf="user.value.node" (click)="selectNodeNotesReg(user.key, 'sync')" matTooltip="{{user.value.modified_date ? user.value.modified_date : 'None'}}" matTooltipPosition="above">{{selectedUidReg == user.key ? 'visibility_off' : 'visibility'}}</mat-icon>                
                 <ng-container *ngIf="user.value.status == 'default'">
                   <mat-icon class="mat-btn" (click)="aceptSync(user.key)" matTooltip="Enable AutoSync" matTooltipPosition="above">stars</mat-icon>
                 </ng-container>
@@ -76,12 +76,21 @@
                   <mat-icon class="mat-btn" (click)="cancelSync(user.key)" matTooltip="Deny Sync request" matTooltipPosition="above">cancel</mat-icon>
                 </ng-container>
               </div>
-            </mat-card-header>
-            <mat-card-content *ngIf="false">
-              <div class="mat-card-info container dis4">
-                <div>Extra</div>
+              <div *ngIf="multiSelectUser" class="mat-card-info">
+                  <mat-icon class="mat-card-btn">{{checkMultiSelectUserList(user.key) > -1 ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
               </div>
-            </mat-card-content>
+            </mat-card-header>
+          </mat-card>
+          <mat-card>
+            <mat-card-actions>
+              <button *ngIf="multiSelectUserList.length > 1" (click)="resetMultiSelectUserList()" mat-raised-button color="warn">Exit</button>
+              <mat-slide-toggle class="toggle-card"
+                matTooltip="{{multiSelectUser ? 'Switch to single select' : 'Switch to multi select'}}"
+                matTooltipPosition="above"
+                color="accent"
+                [(ngModel)]="multiSelectUser">
+                </mat-slide-toggle>
+            </mat-card-actions>
           </mat-card>
         </ng-container>
       </div>
@@ -102,7 +111,7 @@
     <mat-expansion-panel #accRegShared>
       <mat-expansion-panel-header>
         <mat-panel-title class="left-title">
-          <mat-icon>{{accRegShared.expanded ? 'people' : 'folder_shared'}}</mat-icon>
+          <mat-icon matBadge="{{countLinks}}" matBadgeColor="accent">{{accRegShared.expanded ? 'people' : 'folder_shared'}}</mat-icon>
         </mat-panel-title>
         <mat-panel-description>
           Shared
@@ -110,11 +119,24 @@
       </mat-expansion-panel-header>
       <div class="mat-expansion-panel-content">
         <div>
-          NodeGroups and NodePackage
+          NodeLinks & NodeGroups
+        </div>
+        <div *ngIf="sharedLinks" class="shared-link">
+          <div *ngFor="let sharedLink of sharedLinks | keyvalue" class="container dis3r4">
+            <a [href]="sanitize('https://a-club-admin.firebaseapp.com/shared-link?key=' + sharedLink.key)" target="_blank">
+              <mat-icon>{{sharedLink.value.type}}</mat-icon>[ {{sharedLink.key.substr(0, 15) + '...'}} ]
+            </a>
+            <mat-icon *ngIf="sharedLink.value.generic" class="shared-set-notes" (click)="selectNodeNotesReg(sharedLink.key, 'shared')">{{selectedUidReg == sharedLink.key ? 'visibility_off' : 'visibility'}}</mat-icon>
+            <a class="shared-whatsapp" [href]="sanitize('https://wa.me/?text=https://a-club-admin.firebaseapp.com/shared-link?key=' + sharedLink.key)" data-action="share/whatsapp/share" target="_blank">
+              <img src="assets/img/social-media.svg">
+            </a>
+            <mat-icon class="shared-remove" *ngIf="isSharedLinkAdmin(sharedLink.key)" (click)="removeSharedLink(sharedLink.key)">cancel</mat-icon>
+            <mat-icon class="shared-add-note" *ngIf="canAddNodeNotesShared(sharedLink.key)" (click)="addSelectedNotesShared(sharedLink.key)">note_add</mat-icon>
+          </div>
         </div>
       </div>
       <div class="mat-expansion-panel-actions">
-        <button class="cursor-pointer" mat-raised-button color="primary">Create new NodeGroup</button>
+        <button *ngIf="multiSelectUserList.length >= 3" (click)="generateNodeGroup()" class="cursor-pointer" mat-raised-button color="primary">Create new NodeGroup</button>
       </div>
     </mat-expansion-panel>
   </div>
@@ -130,8 +152,8 @@
         <mat-progress-bar *ngIf="!loadState" color="accent" mode="indeterminate"></mat-progress-bar>
         <div class="scroll-categories">
           <mat-accordion>
-            <mat-expansion-panel #acc [expanded]="selectedCategory == category.key" *ngFor="let category of categories | keyvalue">
-              <mat-expansion-panel-header (click)="multiSelectAllCategory(category.key, acc)">
+            <mat-expansion-panel (click)="selectedCategory = category.key" #acc [expanded]="selectedCategory == category.key" *ngFor="let category of categories | keyvalue">
+              <mat-expansion-panel-header [style.border]="selectedCategory == category.key ? '1px solid #673ab7' : ''" (click)="multiSelectAllCategory(category.key, acc)">
                 <mat-panel-title class="left-title">
                   <mat-icon>{{acc.expanded ? 'folder_open' : 'folder'}}</mat-icon>
                 </mat-panel-title>
@@ -149,7 +171,7 @@
                     <mat-icon *ngIf="multiSelectNodeNote" class="mat-card-btn">{{checkMultiSelectNodeNoteList(note.name) > -1 ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
                   </mat-card-header>
                 </mat-card>
-                <mat-card *ngIf="selectedUidReg == ''">
+                <mat-card *ngIf="isAdmin || selectedUidReg == ''">
                   <mat-card-header class="new-nodenote" (click)="createNodeNote(category.key)" >
                     <mat-icon class="mat-card-icon" mat-card-avatar>note_add</mat-icon>
                     <mat-card-title>New<span class="plus">+</span></mat-card-title>
@@ -181,12 +203,13 @@
           {{securityRemove == 1 ? 'Confirm' : 'Remove'}}
         </button>
         <mat-slide-toggle *ngIf="statusCategory > -3"
-            class="toggle-card"
-            matTooltip="{{multiSelectNodeNote ? 'Switch to single select' : 'Switch to multi select'}}"
-            matTooltipPosition="above"
-            color="accent"
-            [(ngModel)]="multiSelectNodeNote">
-            </mat-slide-toggle>
+        class="toggle-card"
+        matTooltip="{{multiSelectNodeNote ? 'Switch to single select' : 'Switch to multi select'}}"
+        matTooltipPosition="above"
+        color="accent"
+        [(ngModel)]="multiSelectNodeNote">
+          {{totalStorageInAccount}}<span class="megab">mb</span> / {{myStorageSize}}<span class="megab">mb</span>
+        </mat-slide-toggle>
       </mat-card-actions>
     </mat-card>
   </div>
@@ -195,7 +218,7 @@
           <mat-card-header (click)="setEditable()"
           [ngClass]="isEditable ? 'hide-block' : 'edit-note'"
           #editTooltip="matTooltip"
-          matTooltip="Click title to edit [shift + e]"
+          matTooltip="Click title to edit"
           matTooltipPosition="above">
             <mat-icon mat-card-avatar class="mat-card-icon">description</mat-icon>
             <mat-card-title #titleScroll>{{selectedNote.name}}</mat-card-title>              
@@ -249,37 +272,13 @@
                       [color]="currentFile.value.name == file.value.name ? 'warn' : 'accent'"
                       mode='indeterminate'>
                   </mat-progress-spinner>
-                  <mat-icon *ngIf="!fileObject && selectedUidReg == ''" class="cursor-pointer" (click)="fileInput.click()">attachment</mat-icon>
+                  <mat-icon *ngIf="!fileObject && selectedUidReg == '' && checkIfStorageLeft()" class="cursor-pointer" (click)="fileInput.click()">attachment</mat-icon>
                   <input class="hide-block" #fileInput type="file" (change)="setFile($event, file.key, 'cloud')">
                 </mat-card-content>
               </mat-card>
             </div>
-            <div class="local-container" *ngIf="false">
-              <mat-card class="local-card" *ngFor="let file of selectedNote.local_files | keyvalue">
-                <mat-card-header *ngIf="file.value.name != 'none'">
-                  <div class="mat-card-info">
-                    <mat-icon (click)="removeLocalFile(file.key)" class="cancel-file">cancel</mat-icon>
-                  </div>
-                </mat-card-header>
-                <mat-card-content>
-                  <div matTooltip="{{file.key == 0 ? 'New Local File' : file.value.name}}" matTooltipPosition="above">
-                    <a *ngIf="file.value.url != 'none' && currentFile.value.name != file.value.name" href="{{file.value.url}}" class="icontainer" target="_blank">
-                      <mat-icon class="icon-file">{{file.value.type | fileIcon}}</mat-icon>
-                    </a>
-                  </div>
-                  <mat-progress-spinner
-                      *ngIf="fileObject || currentFile.value.name == file.value.name"
-                      class="spinner-file"
-                      [color]="currentFile.value.name == file.value.name ? 'warn' : 'accent'"
-                      mode='indeterminate'>
-                  </mat-progress-spinner>
-                  <mat-icon [style.color]="file.key == 0 ? 'green' : '#5a5a5a'" class="cursor-pointer" (click)="localFileInput.click()">attachment</mat-icon>
-                  <input class="hide-block" #localFileInput type="file" (change)="setFile($event, file.key, 'local')">
-                </mat-card-content>
-              </mat-card>
-            </div>
           </mat-card-content>
-          <mat-card-actions *ngIf="selectedUidReg == ''">
+          <mat-card-actions *ngIf="isAdmin || selectedUidReg == ''">
             <button (click)="removeNodeNote(selectedNote, selectedCategory)" mat-raised-button color="warn">Remove</button>
             <button *ngIf="nodeNotes && isEditable" (click)="setNodeNote(nameInput.value, descriptionInput.value, textInput.value)" mat-raised-button color="primary">Save</button>
             <mat-slide-toggle
@@ -300,6 +299,7 @@
           </div>
         </mat-card-content>
         <mat-card-actions>
+          <button (click)="shareNodeNotes()" mat-raised-button color="primary">Share Selected NodeNotes</button>
           <button (click)="multiSelectNodeNoteList = []" mat-raised-button color="warn">Exit</button>
         </mat-card-actions>
     </mat-card>

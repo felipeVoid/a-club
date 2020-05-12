@@ -21,10 +21,11 @@ const routes: Routes = [
       { path: 'chart', component: HomeComponent, canActivate: [AuthGuard]},
       { path: 'exam', component: ExamComponent, canActivate: [AuthGuard]},
       { path: '', component: NodesComponent, canActivate: [AuthGuard]},
-      { path: 'art', component: ArtComponent, canActivate: [AuthGuard]},
+      { path: 'art', component: ArtComponent, canActivate: [AuthGuard]}
     ]
   },
-  { path: 'login', component: LoginComponent}
+  { path: 'login', component: LoginComponent},
+  { path: 'shared-link', component: LocalDataComponent}
 ];
 
 @NgModule({
