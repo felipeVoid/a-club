@@ -14,12 +14,14 @@ export class MainComponent implements OnInit {
   opened: boolean;
   globalDataBase = '';
   user: any;
+
   notifications = [];
   tempNotifications = [];
+
   chats: any;
   chatOn = false;
   selectedChat = '';
-  contNewMsg = 0;
+  selectedTextArea: any;
 
   textSendActive = '';
   currentBox = '';
@@ -73,8 +75,14 @@ export class MainComponent implements OnInit {
           });
           if (temp_list.indexOf(this.user.uid) < 0) {
             delete this.chats[key];
+          } else {
+            this.chats[key].messages = Object.entries(this.chats[key].messages).reverse();
           }
         });
+
+        if (this.selectedTextArea) {
+          this.selectedTextArea.focus();
+        }
 
         if (this.isEmpty(this.chats)) {
           this.chats = null;
@@ -90,7 +98,16 @@ export class MainComponent implements OnInit {
     if (chat) {
       this.selectedChat = chat;
       this.showLink(chat);
-      this.setScrollBox(box);
+      this.selectedTextArea = document.getElementById(box);
+      this.selectedTextArea.focus();
+      for (var [key, value] of this.chats[this.selectedChat].messages) {
+        if (!value.read[this.user.uid]) {
+          // value.read[this.user.id] = true;
+          const url = 'chat/' + this.selectedChat + '/messages/' + key + '/read';
+          // console.log(url);
+          // this.services.setItemByKey(true, url);
+        }
+      }
     }
   }
 
@@ -145,12 +162,25 @@ export class MainComponent implements OnInit {
 
       this.services.setItemByKey(message, 'chat/' + this.selectedChat + '/messages/' + newId)
       .then(() => {
-        this.setScrollBox(box);
+        // this.setScrollBox(box);
         input.value = '';
         this.textSendActive = ''
+
+        this.selectedTextArea = document.getElementById(textarea);
         document.getElementById(textarea).focus();
       });
     }
+  }
+
+  getUnreadMessages(keyChat) {
+    let contUnread = 0;
+    for (var [key, value] of this.chats[keyChat].messages) {
+      const msgIsRead = value.read[this.user.uid];
+      if (!msgIsRead) {
+        contUnread++;
+      }
+    }
+    return contUnread;
   }
 
   removeChat(uid) {

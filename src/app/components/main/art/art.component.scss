@@ -1,14 +1,20 @@
 .art-container {
-    padding: 20px;
-    background-color: #dcdcdc;
-    margin-top: 56px;
+    background-color: #210021;
     margin-bottom: 60px;
 }
 
 .boundary-art {
+    background-color: #dcdcdc;
     height: 600px;
     overflow: auto;
-    border: 1px solid #ff2c2c;
+    border: 1px solid #4e004e;
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    img {
+        pointer-events: none;
+    }
 }
 
 .remove-char {
@@ -16,7 +22,7 @@
     position: absolute;
     left: -20px;
     top: -20px;
-    z-index: 9999;
+    z-index: 500;
     color: #ff2c2c;    
     &:hover {
         color: #9b0000;
@@ -24,23 +30,69 @@
 }
 
 .menu-art-zone {
-    z-index: 9999;
-    width: 100%;
+    margin-top: 17px;
+    .color-pick-bg {
+        width: 100%;
+        min-height: 93px;
+    }
 }
 
 .mat-accordion-edit {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    z-index: 9999;
+    grid-row-gap: 10px;
+    position: fixed;
+    top: 8%;
+    z-index: 550;
     opacity: 0.8;
     &:hover {
         opacity: 1;
     }
-    .mat-card-content-edit {
+
+    .active-item {
+        background-color: purple;
+        mat-icon {
+            color: #ffffff;
+        }
+    }
+
+    .mat-item-accordion {
+        cursor: pointer;
+        &:hover {
+            background-color: purple;
+            mat-icon {
+                color: #ffffff;
+            }
+        }
+    }
+}
+
+.divider {
+    border-bottom: 1px solid #aaaaaa;
+}
+
+.mat-card-content-edit {
+    position: fixed;
+    top: 7%;
+    width: 40%;
+    height: 88%;
+    z-index: 550;
+    .main-content {
         overflow: auto;
-        max-height: 400px;
+        height: 90%;
+        .panel {
+            height: 100%;
+            width: 100%;
+        }
+    }
+}
+
+@media (max-width: 700px) {
+    .art-container {
+        margin-top: 56px;
+    }
+    .mat-card-content-edit {
+        position: fixed;
+        left: 0 !important;
+        width: 91%;
     }
 }
 
@@ -64,4 +116,27 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.image-library {
+    overflow: auto;
+    .image-library-obj {
+        cursor: pointer;
+        padding: 2px;
+        border-radius: 5px;
+        align-items: center;
+        display: flex;
+        &:hover {
+            padding: 0;
+            border: 2px solid purple;
+        }
+        img {
+            width: 100%;
+            height: auto;
+        }
+    }
+}
+
+#download {
+    display: none;
 }

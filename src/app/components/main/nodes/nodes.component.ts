@@ -244,43 +244,43 @@ export class NodesComponent implements OnInit {
 
   selectNodeNotesReg(uid, type) {
     this.selectedNote = null;
-    this.multiSelectNodeNote = false;
-    this.isAdmin = false;
-    if (this.selectedUidReg == '') {
-      this.selectedUidReg = uid;
-
-      switch(type) {
-        case 'shared':
-          if (this.sharedLinks[uid]['generic']) {
-            this.categories = this.sharedLinks[uid]['generic'];
-          }
-          break;
-        case 'sync':
-          if (this.registeredUsers[uid]['node']) {
-            this.categories = this.registeredUsers[uid]['node'];
-          }
-          break;
+      this.multiSelectNodeNote = false;
+      this.isAdmin = false;
+      if (this.selectedUidReg == '') {
+        this.selectedUidReg = uid;
+  
+        switch(type) {
+          case 'shared':
+            if (this.sharedLinks[uid]['generic']) {
+              this.categories = this.sharedLinks[uid]['generic'];
+            }
+            break;
+          case 'sync':
+            if (this.registeredUsers[uid]['node']) {
+              this.categories = this.registeredUsers[uid]['node'];
+            }
+            break;
+        }
+      } else if (this.selectedUidReg != uid && this.selectedUidReg != '') {
+        this.selectedUidReg = uid;
+  
+        switch(type) {
+          case 'shared':
+            if (this.sharedLinks[uid]['generic']) {
+              this.categories = this.sharedLinks[uid]['generic'];
+            }
+            break;
+          case 'sync':
+            if (this.registeredUsers[uid]['node']) {
+              this.categories = this.registeredUsers[uid]['node'];
+            }
+            break;
+        }
+      } else {
+        this.selectedUidReg = '';
+        this.categories = this.fullCategories;
       }
-    } else if (this.selectedUidReg != uid && this.selectedUidReg != '') {
-      this.selectedUidReg = uid;
-
-      switch(type) {
-        case 'shared':
-          if (this.sharedLinks[uid]['generic']) {
-            this.categories = this.sharedLinks[uid]['generic'];
-          }
-          break;
-        case 'sync':
-          if (this.registeredUsers[uid]['node']) {
-            this.categories = this.registeredUsers[uid]['node'];
-          }
-          break;
-      }
-    } else {
-      this.selectedUidReg = '';
-      this.categories = this.fullCategories;
-    }
-    this.isAdmin = this.isSharedLinkAdmin(uid);
+      this.isAdmin = this.isSharedLinkAdmin(uid);
   }
 
   validateWorkGroup() {
@@ -849,7 +849,7 @@ export class NodesComponent implements OnInit {
       if (action.payload.val()) {
         this.mySharedLinks = action.payload.val();
       } else {
-        this.mySharedLinks = { none: 'none'}
+        this.mySharedLinks = { none: 'none' }
       }
       this.getSharedLinks();
     });
@@ -897,6 +897,90 @@ export class NodesComponent implements OnInit {
     const url = this.globalDataBase + '/shared_links/' + uidLink;
     this.services.setItemByKey(true, url).then(() => {
       this.services.setItemByKey(sharedLink, 'shared_links/' + uidLink);
+
+      const newChar = {
+        author: {
+          user: {
+            name: this.user.name,
+            picture: this.user.picture,
+            email: this.user.email
+          },
+          date: dateNow
+        },
+        modified: {
+          user: {
+            name: this.user.name,
+            picture: this.user.picture,
+            email: this.user.email
+          },
+          date: dateNow
+        },
+        content: {
+          text: '',
+          image: 'assets/img/emoji.svg',
+          edit: false // uid del usuario que esta editando, validar cambios al guardar, que no se borren
+        },
+        options: {
+          width: 200,
+          height: 200,
+          z_index: 10,
+          background_color: '#673ab7',
+          color: '#ffd740',
+          opacity: 1,
+          border_radius: {
+            type: 'px',
+            radius: 0
+          },
+          font_size: '18px',
+          font_family: 'Roboto',
+          transform: {
+            x: 0,
+            y: 0,
+            z: 0,
+            deg: 180
+          },
+          transform_origin : 'bottom left',
+          filter: {
+            blur: 0, //px
+            brightness: 100, //%
+            contrast: 100, //%
+            hue_rotate: 0, //deg
+            sepia: 0, //%
+            saturate: 100, //%
+            drop_shadow: {
+              h_shadow: 0, //px
+              v_shadow: 0, //px
+              blur: 0, //px
+              color: 'gray' //hex
+            },
+            grayscale: 0, //%
+            invert: 0, //%
+          },
+          speed: 35,
+          position: {
+            x: 200,
+            y: 200
+          }
+        }
+      };
+  
+      const artZone = {
+        general: {
+          background_color: '#aaaaaa'
+        },
+        chars: {
+          default: newChar
+        },
+        active: {
+          [this.user.uid]: {
+            name: this.user.name,
+            picture: this.user.picture,
+            email: this.user.email
+          }
+        }
+      };
+  
+      this.services.setItemByKey(artZone, 'art_zone/' + uidLink);
     });
   }
 
@@ -947,6 +1031,91 @@ export class NodesComponent implements OnInit {
 
     this.services.setItemByKey(newChat, 'chat/' + uidLink);
 
+    const newChar = {
+      author: {
+        user: {
+          name: this.user.name,
+          picture: this.user.picture,
+          email: this.user.email
+        },
+        date: dateNow
+      },
+      modified: {
+        user: {
+          name: this.user.name,
+          picture: this.user.picture,
+          email: this.user.email
+        },
+        date: dateNow
+      },
+      content: {
+        text: '',
+        image: 'assets/img/emoji.svg',
+        edit: false // uid del usuario que esta editando, validar cambios al guardar, que no se borren
+      },
+      options: {
+        width: 200,
+        height: 200,
+        z_index: 10,
+        background_color: '#673ab7',
+        color: '#ffd740',
+        opacity: 1,
+        border_radius: {
+          type: 'px',
+          radius: 0
+        },
+        font_size: '18px',
+        font_family: 'Roboto',
+        transform: {
+          x: 0,
+          y: 0,
+          z: 0,
+          deg: 180
+        },
+        transform_origin : 'bottom left',
+        filter: {
+          blur: 0, //px
+          brightness: 100, //%
+          contrast: 100, //%
+          hue_rotate: 0, //deg
+          sepia: 0, //%
+          saturate: 100, //%
+          drop_shadow: {
+            h_shadow: 0, //px
+            v_shadow: 0, //px
+            blur: 0, //px
+            color: 'gray' //hex
+          },
+          grayscale: 0, //%
+          invert: 0, //%
+        },
+        speed: 35,
+        position: {
+          x: 200,
+          y: 200
+        }
+      }
+    };
+
+    const artZone = {
+      members: selectedMembers,
+      general: {
+        background_color: '#aaaaaa'
+      },
+      chars: {
+        default: newChar
+      },
+      active: {
+        [this.user.uid]: {
+          name: this.user.name,
+          picture: this.user.picture,
+          email: this.user.email
+        }
+      }
+    };
+
+    this.services.setItemByKey(artZone, 'art_zone/' + uidLink);
+
     
     const selectedNodeNotes = [];
     Object.keys(this.fullCategories).filter(key => {
@@ -981,6 +1150,7 @@ export class NodesComponent implements OnInit {
       this.services.removeItemByKey(url);
     });
     this.services.removeItemByKey('chat/' + key);
+    this.services.removeItemByKey('art_zone/' + key);
   }
 
   addSelectedNotesShared(uid) {

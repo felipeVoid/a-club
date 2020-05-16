@@ -30,7 +30,8 @@ import {
   MatSnackBarModule,
   MatProgressSpinnerModule,
   MatDatepickerModule,
-  MatNativeDateModule
+  MatNativeDateModule,
+  MatSliderModule
 } from '@angular/material';
 
 import {DragDropModule} from '@angular/cdk/drag-drop';
@@ -61,11 +62,13 @@ import { FileIconPipe } from './pipes/file-icon.pipe';
 import { LocalDataComponent } from './components/local-data/local-data.component';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { GamesComponent } from './components/main/games/games.component';
 
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/storage';
 import 'firebase/database';
+
 
 @NgModule({
   declarations: [
@@ -84,7 +87,8 @@ import 'firebase/database';
     ArtComponent,
     AlertSnackBarComponent,
     FileIconPipe,
-    LocalDataComponent
+    LocalDataComponent,
+    GamesComponent
   ],
   imports: [
     BrowserModule,
@@ -115,6 +119,7 @@ import 'firebase/database';
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatSliderModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     ChartsModule,

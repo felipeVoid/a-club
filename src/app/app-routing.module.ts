@@ -9,6 +9,7 @@ import {ExamComponent} from './components/main/exam/exam.component';
 import { NodesComponent } from './components/main/nodes/nodes.component';
 import { ArtComponent } from './components/main/art/art.component';
 import { LocalDataComponent } from './components/local-data/local-data.component';
+import { GamesComponent } from './components/main/games/games.component';
 
 
 const routes: Routes = [
@@ -21,7 +22,8 @@ const routes: Routes = [
       { path: 'chart', component: HomeComponent, canActivate: [AuthGuard]},
       { path: 'exam', component: ExamComponent, canActivate: [AuthGuard]},
       { path: '', component: NodesComponent, canActivate: [AuthGuard]},
-      { path: 'art', component: ArtComponent, canActivate: [AuthGuard]}
+      { path: 'art', component: ArtComponent, canActivate: [AuthGuard]},
+      { path: 'games', component: GamesComponent, canActivate: [AuthGuard]}
     ]
   },
   { path: 'login', component: LoginComponent},

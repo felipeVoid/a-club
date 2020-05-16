@@ -27,6 +27,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .dis {
   grid-template-columns: auto;
+  grid-row-gap: 5px;
 }
 
 .dis1-2 {
@@ -120,7 +121,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
   .mat-toolbar {
     position: fixed;
-    z-index: 20;
+    z-index: 1000;
   }
   
   .resp-margin {

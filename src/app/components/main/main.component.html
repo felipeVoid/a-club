@@ -10,8 +10,7 @@
     <div class="menu-item" routerLink="/" (click)="sidenavToggleCloseChat(sidenav)"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">note</mat-icon></div>
     <div class="menu-item" routerLink="/data" (click)="sidenavToggleCloseChat(sidenav)"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">people_alt</mat-icon></div>    
     <div *ngIf="false" class="menu-item" routerLink="/chart" (click)="sidenavToggleCloseChat(sidenav)"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">pie_chart</mat-icon></div>
-    <div *ngIf="false" class="menu-item" routerLink="/exam" (click)="sidenavToggleCloseChat(sidenav)"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">school</mat-icon></div>
-    <div class="menu-item" routerLink="/art" (click)="sidenavToggleCloseChat(sidenav)"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">toys</mat-icon></div>
+    <div *ngIf="false" class="menu-item" routerLink="/exam" (click)="sidenavToggleCloseChat(sidenav)"><mat-icon class="icon-header" aria-hidden="false" aria-label="icon">school</mat-icon></div>    
 
     <div class="chats-resp" *ngIf="chats">
       <div *ngFor="let chat of chats | keyvalue; let i = index;"
@@ -78,8 +77,8 @@
   [style.z-index]="50 - i"
   class="dialog-chat">
     <div class="container dis1-4 chat-header" (click)="setActiveChat(chat.key, 'messageBox' + i)">
-      <img class="pic-folder" src="{{getChatMembers(chat.value.members, 'picture')}}" *ngIf="getChatMembers(chat.value.members, 'picture') != 'folder_shared'">
-      <mat-icon class="folder-shared" *ngIf="getChatMembers(chat.value.members, 'picture') == 'folder_shared'">folder_shared</mat-icon>
+      <img matBadge="{{getUnreadMessages(chat.key)}}" matBadgeOverlap="false" class="pic-folder" src="{{getChatMembers(chat.value.members, 'picture')}}" *ngIf="getChatMembers(chat.value.members, 'picture') != 'folder_shared'">
+      <mat-icon matBadge="{{getUnreadMessages(chat.key)}}" matBadgeOverlap="false" class="folder-shared" *ngIf="getChatMembers(chat.value.members, 'picture') == 'folder_shared'">folder_shared</mat-icon>
       <p>{{getChatMembers(chat.value.members, 'name')}}</p>
     </div>
     <div class="chat-box" [style.right]="'0px'" [ngClass]="selectedChat == chat.key ? 'active' : ''">
@@ -92,15 +91,15 @@
           <mat-icon (click)="closeChatBox()" class="mat-card-cancel">cancel</mat-icon>
         </mat-card-header>
         <mat-card-content [id]="'messageBox' + i" *ngIf="chat.value.messages && !displayMembers">
-          <div *ngFor="let msg of chat.value.messages | keyvalue" class="msgs">
+          <div *ngFor="let msg of chat.value.messages" class="msgs">
             <span>
-              <img src="{{msg.value.user.picture}}">
+              <img src="{{msg[1].user.picture}}">
             </span>
             <span class="username">
-              {{msg.value.user.name}}:
+              {{msg[1].user.name}}:
             </span>
             <span class="text">
-              {{msg.value.text}}
+              {{msg[1].text}}
             </span>
           </div>
         </mat-card-content>

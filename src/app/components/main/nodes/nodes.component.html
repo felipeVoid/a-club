@@ -81,18 +81,20 @@
               </div>
             </mat-card-header>
           </mat-card>
-          <mat-card>
-            <mat-card-actions>
-              <button *ngIf="multiSelectUserList.length > 1" (click)="resetMultiSelectUserList()" mat-raised-button color="warn">Exit</button>
-              <mat-slide-toggle class="toggle-card"
-                matTooltip="{{multiSelectUser ? 'Switch to single select' : 'Switch to multi select'}}"
-                matTooltipPosition="above"
-                color="accent"
-                [(ngModel)]="multiSelectUser">
-                </mat-slide-toggle>
-            </mat-card-actions>
-          </mat-card>
         </ng-container>
+
+        <mat-card>
+          <mat-card-actions>
+            <button *ngIf="multiSelectUserList.length > 1" (click)="resetMultiSelectUserList()" mat-raised-button color="warn">Exit</button>
+            <mat-slide-toggle class="toggle-card"
+              matTooltip="{{multiSelectUser ? 'Switch to single select' : 'Switch to multi select'}}"
+              matTooltipPosition="above"
+              color="accent"
+              [(ngModel)]="multiSelectUser">
+              </mat-slide-toggle>
+          </mat-card-actions>
+        </mat-card>
+        
       </div>
       <div class="mat-expansion-panel-actions" *ngIf="false">
         <mat-icon>{{statusSearchUsers ?  'assignment_ind' : 'assignment'}}</mat-icon>
@@ -123,13 +125,19 @@
         </div>
         <div *ngIf="sharedLinks" class="shared-link">
           <div *ngFor="let sharedLink of sharedLinks | keyvalue" class="container dis3r4">
-            <a [href]="sanitize('https://a-club-admin.firebaseapp.com/shared-link?key=' + sharedLink.key)" target="_blank">
+            <a [href]="sanitize('/shared-link?key=' + sharedLink.key)" target="_blank">
               <mat-icon>{{sharedLink.value.type}}</mat-icon>[ {{sharedLink.key.substr(0, 15) + '...'}} ]
             </a>
-            <mat-icon *ngIf="sharedLink.value.generic" class="shared-set-notes" (click)="selectNodeNotesReg(sharedLink.key, 'shared')">{{selectedUidReg == sharedLink.key ? 'visibility_off' : 'visibility'}}</mat-icon>
+
+            <mat-icon *ngIf="!multiSelectUser && sharedLink.value.generic" class="shared-set-notes" (click)="selectNodeNotesReg(sharedLink.key, 'shared')">{{selectedUidReg == sharedLink.key ? 'visibility_off' : 'visibility'}}</mat-icon>
+            <a *ngIf="multiSelectUser" [href]="sanitize('/art?key=' + sharedLink.key)" target="_blank">
+              <mat-icon>toys</mat-icon>
+            </a>
+
             <a class="shared-whatsapp" [href]="sanitize('https://wa.me/?text=https://a-club-admin.firebaseapp.com/shared-link?key=' + sharedLink.key)" data-action="share/whatsapp/share" target="_blank">
               <img src="assets/img/social-media.svg">
             </a>
+
             <mat-icon class="shared-remove" *ngIf="isSharedLinkAdmin(sharedLink.key)" (click)="removeSharedLink(sharedLink.key)">cancel</mat-icon>
             <mat-icon class="shared-add-note" *ngIf="canAddNodeNotesShared(sharedLink.key)" (click)="addSelectedNotesShared(sharedLink.key)">note_add</mat-icon>
           </div>

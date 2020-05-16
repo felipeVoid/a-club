@@ -1,0 +1,10 @@
+[
+    {
+      "origin": [
+        "https://a-club-admin.firebaseapp.com/",
+        "http://localhost:4200/"
+      ],
+      "method": ["GET"],
+      "maxAgeSeconds": 3600
+    }
+]
