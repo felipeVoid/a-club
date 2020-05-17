@@ -19,15 +19,19 @@ export class MainComponent implements OnInit {
   tempNotifications = [];
 
   chats: any;
+  fullChats: any;
   chatOn = false;
   selectedChat = '';
   selectedTextArea: any;
+  totalUnread = 0;
 
   textSendActive = '';
   currentBox = '';
 
   statusSharedLink = '';
   displayMembers = false;
+
+  displayEmoji = false;
   constructor(public afAuth: AngularFireAuth,
               public dialog: MatDialog,
               private services: Services,
@@ -40,6 +44,7 @@ export class MainComponent implements OnInit {
     this.services.subscribeItemByKey(this.globalDataBase + '/chat_on').subscribe(action => {
       if (action.payload.val()) {
         this.getChats();
+        this.chatOn = true;
       } else {
         this.chats = null;
       }
@@ -67,6 +72,16 @@ export class MainComponent implements OnInit {
     this.services.subscribeItemByKey('chat').subscribe(action => {      
       if (action.payload.val()) {
         this.chats = action.payload.val();
+        this.fullChats = action.payload.val();
+
+        this.totalUnread = 0;
+        Object.keys(this.fullChats).filter(chat => {
+          Object.keys(this.fullChats[chat].messages).filter(msg => {
+            if (!this.fullChats[chat].messages[msg].read[this.user.uid]) {
+              this.totalUnread++;
+            }
+          });
+        });
 
         Object.keys(this.chats).filter(key => {
           const temp_list = [];
@@ -100,14 +115,15 @@ export class MainComponent implements OnInit {
       this.showLink(chat);
       this.selectedTextArea = document.getElementById(box);
       this.selectedTextArea.focus();
-      for (var [key, value] of this.chats[this.selectedChat].messages) {
-        if (!value.read[this.user.uid]) {
-          // value.read[this.user.id] = true;
-          const url = 'chat/' + this.selectedChat + '/messages/' + key + '/read';
-          // console.log(url);
-          // this.services.setItemByKey(true, url);
+      
+      Object.keys(this.fullChats[chat].messages).filter(msg => {
+        if (!this.fullChats[chat].messages[msg].read[this.user.uid]) {
+          const url = 'chat/' + chat + '/messages/' + msg + '/read/' + this.user.uid;
+          this.services.setItemByKey(true, url);
         }
-      }
+      });
+      
+      
     }
   }
 
@@ -133,6 +149,10 @@ export class MainComponent implements OnInit {
       default:
         return '';
     }
+  }
+
+  setEmoji(textarea, emoji) {
+    textarea.value = textarea.value + emoji;
   }
 
   sendMessage(input, box, textarea) {
@@ -162,7 +182,6 @@ export class MainComponent implements OnInit {
 
       this.services.setItemByKey(message, 'chat/' + this.selectedChat + '/messages/' + newId)
       .then(() => {
-        // this.setScrollBox(box);
         input.value = '';
         this.textSendActive = ''
 
@@ -172,15 +191,14 @@ export class MainComponent implements OnInit {
     }
   }
 
-  getUnreadMessages(keyChat) {
+  getUnreadMessages(chat) {
     let contUnread = 0;
-    for (var [key, value] of this.chats[keyChat].messages) {
-      const msgIsRead = value.read[this.user.uid];
-      if (!msgIsRead) {
+    Object.keys(this.fullChats[chat].messages).filter(msg => {
+      if (!this.fullChats[chat].messages[msg].read[this.user.uid]) {
         contUnread++;
       }
-    }
-    return contUnread;
+    });
+    return contUnread;  
   }
 
   removeChat(uid) {
