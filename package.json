@@ -33,7 +33,7 @@
     "html2canvas": "^1.0.0-rc.5",
     "ng2-charts": "^2.3.0",
     "rxjs": "~6.4.0",
-    "three": "^0.115.0",
+    "three": "^0.125.0",
     "three.meshline": "^1.2.0",
     "tslib": "^1.11.1",
     "zone.js": "~0.9.1"
